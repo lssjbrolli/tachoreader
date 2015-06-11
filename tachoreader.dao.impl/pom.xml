@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>tachoreader</artifactId>
+		<groupId>com.thingtrack</groupId>
+		<version>0.0.1.SNAPSHOT</version>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>tachoreader.dao.impl</artifactId>
+	<packaging>jar</packaging>
+	
+	<name>ckBlast Dao Layer Implementation</name>
+	<description>Tachoreader Dao Layer Implementation</description>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+		   <groupId>org.eclipse.persistence</groupId>
+		   <artifactId>eclipselink</artifactId>
+		   <version>2.4.2</version>
+		</dependency>
+			
+		<dependency>
+			<groupId>com.thingtrack</groupId>
+			<artifactId>tachoreader.domain</artifactId>
+			<version>${tachoreader.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thingtrack</groupId>
+			<artifactId>tachoreader.dao.api</artifactId>
+			<version>${tachoreader.version}</version>
+		</dependency>
+	</dependencies>
+</project>

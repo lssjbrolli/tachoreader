@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+		
+	<parent>
+		<groupId>com.thingtrack</groupId>
+		<artifactId>tachoreader</artifactId>
+		<version>0.0.1.SNAPSHOT</version>
+	</parent>
+		
+	<artifactId>tachoreader.service.api</artifactId>
+	<packaging>jar</packaging>
+	
+	<name>Tachoreader Service Layer API</name>
+	<description>Tachoreader Service Layer API</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.thingtrack</groupId>
+			<artifactId>tachoreader.domain</artifactId>
+			<version>${tachoreader.version}</version>
+		</dependency>
+	</dependencies>
+</project>
