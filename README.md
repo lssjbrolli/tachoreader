@@ -26,3 +26,16 @@ apache.org/licenses/LICENSE-2.0.html
 - [FilteringTable v0.9.12.v7](https://vaadin.com/directory#!addon/filteringtable) add-on by Teppo Kurki, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [Plupload wrapper for Vaadin 7.x v2.0.0](https://vaadin.com/directory#!addon/plupload-wrapper-for-vaadin-7x) add-on by Slawomir Dymitrow, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [Exporter](https://vaadin.com/directory#!addon/exporter v0.0.5.5) add-on by Haijian Wang, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
+
+Directory Structure
+-------------------
+
+	  |-tachoreader/ ................... Parent project pom with many common dependencies
+	  |-tachoreader.dao.api/ ........... Persistence API
+	  |-tachoreader.dao.impl/ .......... Persistence API Implementation
+	  |-tachoreader.service.api/ ....... Service API
+	  |-tachoreader.service.impl/ ...... Service API Implementation
+	  |-tachoreader.parser/ ............ Library to interpret the bytes of the files in a tachograph card based on the REGLAMENTO (CE) No 1360/2002 DE LA COMISI�N de 13 de junio de 2002
+	  |-tachoreader.workbench/ ......... Web Application
+	  |-license ........................ Commercial License
+	  '-README.md ...................... release readme
