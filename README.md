@@ -30,6 +30,7 @@ apache.org/licenses/LICENSE-2.0.html
 Directory Structure
 -------------------
 
+	  |-exporter/ ...................... Adaptation of the exporter Vaadin add-on to Tachoreader
 	  |-tachoreader/ ................... Parent project pom with many common dependencies
 	  |-tachoreader.dao.api/ ........... Persistence API
 	  |-tachoreader.dao.impl/ .......... Persistence API Implementation
