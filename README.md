@@ -9,11 +9,10 @@ Running the App
 ==
 Run the Maven 'install' for each project target and deploy the resulting WAR file to your Java application server.
 
-Licenses
-==
-The source code is released under Apache 2.0.
 
 The application uses: 
+==
+
 - [MySQL Connector v5.1.6](http://dev.mysql.com/downloads/connector/j/) framework by Oracle, which is released under GPL 2.0: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 - [JPA Eclipse Link v2.4.2](http://www.eclipse.org/eclipselink/) framework by Eclipse, which is released under EPL v1.0 : http://www.eclipse.org/legal/epl-v10.html
 - [Spring v4.1.0.RELEASE](https://spring.io/) framework by Spring, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -28,7 +27,7 @@ apache.org/licenses/LICENSE-2.0.html
 - [Exporter](https://vaadin.com/directory#!addon/exporter v0.0.5.5) add-on by Haijian Wang, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 
 Directory Structure
--------------------
+==
 
 	  |-exporter/ ...................... Adaptation of the exporter Vaadin add-on to Tachoreader
 	  |-tachoreader/ ................... Parent project pom with many common dependencies
@@ -41,3 +40,7 @@ Directory Structure
 	  |-pom.xml ........................ Project object model
 	  |-license ........................ Commercial License
 	  '-README.md ...................... Release readme
+
+Licenses
+==
+Copyright (c) 2010-2015, Thingtrack S.L.
