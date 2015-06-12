@@ -86,7 +86,7 @@ public final class DashboardMenu extends AbstractI18NCustomComponent {
     }
 
     private Component buildTitle() {
-        Label logo = new Label("TachoDriver <strong>Workbench</strong>", ContentMode.HTML);
+        Label logo = new Label("TachoReader <strong>Workbench</strong>", ContentMode.HTML);
         logo.setSizeUndefined();
         HorizontalLayout logoWrapper = new HorizontalLayout(logo);
         logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
