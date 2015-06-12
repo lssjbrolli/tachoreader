@@ -22,7 +22,7 @@ The application uses:
 apache.org/licenses/LICENSE-2.0.html
 - [Vaadin Valo Theme](https://vaadin.com/valo) framework by Vaadin, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [Spring Vaadin Integration v3.1](https://vaadin.com/directory#!addon/vaadin-spring) add-on by Alexander Fedorov, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
-- [I18N4Vaadin v1.0.0](https://vaadin.com/directory#!addon/vaadin-spring) add-on by Alexander Fedorov, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
+- [I18N4Vaadin v1.0.0](https://vaadin.com/directory#!addon/i18n4vaadin) add-on by Alexander Fedorov, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [FilteringTable v0.9.12.v7](https://vaadin.com/directory#!addon/filteringtable) add-on by Teppo Kurki, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [Plupload wrapper for Vaadin 7.x v2.0.0](https://vaadin.com/directory#!addon/plupload-wrapper-for-vaadin-7x) add-on by Slawomir Dymitrow, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 - [Exporter](https://vaadin.com/directory#!addon/exporter v0.0.5.5) add-on by Haijian Wang, which is released under Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
