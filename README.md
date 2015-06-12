@@ -35,7 +35,7 @@ Directory Structure
 	  |-tachoreader.dao.impl/ .......... Persistence API Implementation
 	  |-tachoreader.service.api/ ....... Service API
 	  |-tachoreader.service.impl/ ...... Service API Implementation
-	  |-tachoreader.parser/ ............ Library to interpret the bytes of the files in a tachograph card based on the REGLAMENTO (CE) No 1360/2002 DE LA COMISI�N de 13 de junio de 2002
+	  |-tachoreader.parser/ ............ Library to interpret the bytes of the files in a tachograph card based on the REGLAMENTO (CE) No 1360/2002 DE LA COMISIÓN de 13 de junio de 2002
 	  |-tachoreader.workbench/ ......... Web Application
 	  |-license ........................ Commercial License
 	  '-README.md ...................... release readme
