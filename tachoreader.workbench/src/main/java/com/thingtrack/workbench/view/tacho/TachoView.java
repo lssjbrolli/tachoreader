@@ -44,12 +44,16 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.VerticalLayout;
 import com.google.common.eventbus.Subscribe;
+import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.service.api.DriverService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NView;
+import com.thingtrack.workbench.component.ConfirmForm;
 import com.thingtrack.workbench.component.NotificationHelper;
 import com.thingtrack.workbench.component.PaginationToolbar;
+import com.thingtrack.workbench.component.WindowForm;
 import com.thingtrack.workbench.component.PaginationToolbar.ClickChangePageSizeListener;
 import com.thingtrack.workbench.component.PaginationToolbar.ClickFirstPageListener;
 import com.thingtrack.workbench.component.PaginationToolbar.ClickLastPageListener;
@@ -65,6 +69,7 @@ import com.thingtrack.workbench.component.ToolbarTacho.ClickSelectAllTachosListe
 import com.thingtrack.workbench.component.ToolbarTacho.ClickUnselectAllTachosListener;
 import com.thingtrack.workbench.event.DashboardEvent.ProfileUpdatedEvent;
 import com.thingtrack.workbench.event.DashboardEventBus;
+import com.thingtrack.workbench.view.drivers.DriverForm;
 
 @Component
 @Scope("prototype")
@@ -99,6 +104,9 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 	
 	@Autowired
 	private TachoService tachoService;
+	
+	@Autowired
+	private DriverService driverService;
 	
 	private String tachosRepository = null;
 	private List<Tacho> tachos = null;
@@ -367,6 +375,7 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
         }, "Tachos.zip");
     }	
 
+	@SuppressWarnings({ "unused", "rawtypes" })
 	@Override
 	public void onFileUploaded(PluploadFile file) {
 		try {			    	   	 
@@ -381,9 +390,49 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
     	   	isUploadError = false;
     	   	NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
     	   	
-		} catch (ExceptionDriverNotExist e) {	
+		} catch (final ExceptionDriverNotExist ex) {	
 			isUploadError = true;
-			NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + e.getCardNumber() + " registered");					
+			@SuppressWarnings("serial")
+			ConfirmForm driverConfirmForm = new ConfirmForm(getI18N().getMessage("com.thingtrack.workbench.view.tacho.TachoView.tittle.addDriver"), getI18N().getMessage("com.thingtrack.workbench.view.tacho.TachoView.question.addDriver"), new ConfirmForm.CloseConfirmFormListener() {
+				@Override
+				public void windowDialogClose(ConfirmForm.CloseWindowDialogEvent event) {						
+					if (event.getDialogResult() != ConfirmForm.DialogResult.YES)															
+			    		return;	
+					
+					// created selected item
+					Driver driver = driverService.createNewEntity(WorkbenchUI.getCurrent().getUser());
+					driver.setName(ex.getDriverName());
+					driver.setCardNumber(ex.getCardNumber());
+					driver.setCardExpiryDate(ex.getCardExpiryDate());
+					driver.setCardHolderBirthDate(ex.getDriverBirthDate());
+					
+					try {
+						@SuppressWarnings({ "serial" })
+						WindowForm<Driver> driverWindow = new WindowForm<Driver>(getI18N().getMessage("com.thingtrack.workbench.view.driver.DriverView.tittle.add"), getI18N(), driver, new DriverForm(), new WindowForm.CloseWindowDialogListener<Driver>() {
+							@Override
+							public void windowDialogClose(WindowForm<Driver>.CloseWindowDialogEvent<Driver> event) {					
+								if (event.getDialogResult() != WindowForm.DialogResult.OK)															
+						    		return;					    		
+													
+								try {			
+									Driver driver = event.getDomainEntity();
+									driver.setCreatedBy(WorkbenchUI.getCurrent().getUser()); // a bug in JPA
+									driver.setCreationDate(new Date());
+									
+									// insert entity
+									driver = driverService.save(driver);								
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						});
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});	
 		} catch (ExceptionFileExist e) {	
 			isUploadError = true;
 			NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + e.getFileName() + " has already been registered");					
