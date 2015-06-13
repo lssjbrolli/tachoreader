@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Tachoreader by thingtrack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Tachoreader</h1>
+      <h2 class="project-tagline">A tachograph web platform to manage your tachograph files, and analyze them in a cool way</h2>
+      <a href="https://github.com/thingtrack/tachoreader" class="btn">View on GitHub</a>
+      <a href="https://github.com/thingtrack/tachoreader/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/thingtrack/tachoreader/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="tachoreader-workbench" class="anchor" href="#tachoreader-workbench" aria-hidden="true"><span class="octicon octicon-link"></span></a>TachoReader Workbench</h1>
+
+<p>Sources for the official <a href="http://tachoreader.thingtrack.com/">Thingtrack</a> workbench application: <a href="http://web.tachoreader.thingtrack.com/">http://web.tachoreader.thingtrack.com/</a></p>
+
+<p><img src="http://tachoreader.thingtrack.com/assets/img/app-bg.png" alt="TachoReader Workbench"></p>
+
+<h1>
+<a id="running-the-app" class="anchor" href="#running-the-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running the App</h1>
+
+<p>Run the Maven 'install' for each project target and deploy the resulting WAR file to your Java application server.</p>
+
+<h1>
+<a id="the-application-uses-" class="anchor" href="#the-application-uses-" aria-hidden="true"><span class="octicon octicon-link"></span></a>The application uses: </h1>
+
+<ul>
+<li>
+<a href="http://dev.mysql.com/downloads/connector/j/">MySQL Connector v5.1.6</a> framework by Oracle, which is released under GPL 2.0: <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</a>
+</li>
+<li>
+<a href="http://www.eclipse.org/eclipselink/">JPA Eclipse Link v2.4.2</a> framework by Eclipse, which is released under EPL v1.0 : <a href="http://www.eclipse.org/legal/epl-v10.html">http://www.eclipse.org/legal/epl-v10.html</a>
+</li>
+<li>
+<a href="https://spring.io/">Spring v4.1.0.RELEASE</a> framework by Spring, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://code.google.com/p/guava-libraries/">Google Guava Event Bus v18.0</a> framework by Google, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/home">Vaadin v7.4.6</a> framework by Vaadin, which is released under Apache License 2.0: <a href="http://www">http://www</a>.
+apache.org/licenses/LICENSE-2.0.html</li>
+<li>
+<a href="https://vaadin.com/valo">Vaadin Valo Theme</a> framework by Vaadin, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/directory#!addon/vaadin-spring">Spring Vaadin Integration v3.1</a> add-on by Alexander Fedorov, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/directory#!addon/i18n4vaadin">I18N4Vaadin v1.0.0</a> add-on by Alexander Fedorov, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/directory#!addon/filteringtable">FilteringTable v0.9.12.v7</a> add-on by Teppo Kurki, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/directory#!addon/plupload-wrapper-for-vaadin-7x">Plupload wrapper for Vaadin 7.x v2.0.0</a> add-on by Slawomir Dymitrow, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+<li>
+<a href="https://vaadin.com/directory#!addon/exporter%20v0.0.5.5">Exporter</a> add-on by Haijian Wang, which is released under Apache License 2.0: <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>
+</li>
+</ul>
+
+<h1>
+<a id="directory-structure" class="anchor" href="#directory-structure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Directory Structure</h1>
+
+<pre><code>  |-exporter/ ...................... Adaptation of the exporter Vaadin add-on to Tachoreader
+  |-tachoreader/ ................... Parent project pom with many common dependencies
+  |-tachoreader.dao.api/ ........... Persistence API
+  |-tachoreader.dao.impl/ .......... Persistence API Implementation
+  |-tachoreader.service.api/ ....... Service API
+  |-tachoreader.service.impl/ ...... Service API Implementation
+  |-tachoreader.parser/ ............ Library to interpret the bytes of the files in a tachograph card based on the REGLAMENTO (CE) No 1360/2002 DE LA COMISIÓN de 13 de junio de 2002
+  |-tachoreader.workbench/ ......... Web Application
+  |-pom.xml ........................ Project object model
+  |-license ........................ Commercial License
+  '-README.md ...................... Release readme
+</code></pre>
+
+<h1>
+<a id="licenses" class="anchor" href="#licenses" aria-hidden="true"><span class="octicon octicon-link"></span></a>Licenses</h1>
+
+<p>Copyright (c) 2010-2015, Thingtrack S.L.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/thingtrack/tachoreader">Tachoreader</a> is maintained by <a href="https://github.com/thingtrack">thingtrack</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
