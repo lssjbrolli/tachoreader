@@ -130,7 +130,6 @@ public class TachoServiceImpl implements TachoService {
 					tachoDriver = driverDao.getByCardNumber(tachoDriverIdentification);
 				}
 				catch(Exception ex) {
-					//throw new Exception("There is no driver with this identification card " + tachoDriverIdentification + " registered");
 					throw new ExceptionDriverNotExist(tachoHolderName, tachoDriverIdentification, tachoCardExpiryDate, tachoDriverBithDate);
 				}
 			}
@@ -145,7 +144,6 @@ public class TachoServiceImpl implements TachoService {
 			{
 				tachoDao.getByFile(fileName);
 				
-				//throw new Exception("The tacho " + fileName + " has already been registered");
 				throw new ExceptionFileExist(fileName);
 			} catch (ExceptionFileExist ex) {	
 				throw ex;
