@@ -20,6 +20,7 @@ import org.tacografo.file.cardblockdriver.subblock.CardVehicleRecord;
 import org.tacografo.file.error.ErrorFile;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
 import org.tacografo.file.exception.ExceptionFileExist;
+import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
 import com.thingtrack.tachoreader.dao.api.DriverDao;
 import com.thingtrack.tachoreader.dao.api.TachoDao;
@@ -29,6 +30,7 @@ import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
+import com.thingtrack.tachoreader.domain.Vehicle;
 import com.thingtrack.tachoreader.service.api.TachoService;
 
 public class TachoServiceImpl implements TachoService {
@@ -151,6 +153,14 @@ public class TachoServiceImpl implements TachoService {
 			catch (Exception ex) {								
 			}
 			
+			// get vehicle from tacho
+			Vehicle vehicle = null;
+			try {
+				vehicle = vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
+			} catch (Exception ex) {		
+				throw new ExceptionVehicleNotExist(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
+			}
+			
 			// STEP04: copy tacho file to the tachos organization repository			
 			FileUtils.copyFile(tachoFile, FileUtils.getFile(tachoRepository + "/" + tachoUser.getOrganizationDefault().getId(), fileName));			
 			
@@ -159,7 +169,7 @@ public class TachoServiceImpl implements TachoService {
 				Tacho tacho = new Tacho();
 				
 				tacho.setDriver(tachoDriver);
-				tacho.setVehicle(vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber())); // get the last vehicle used
+				tacho.setVehicle(vehicle); // get the last vehicle used
 				tacho.setFile(fileName);							
 				tacho.setCreatedBy(tachoUser);	
 				tacho.setCreationDate(new Date());

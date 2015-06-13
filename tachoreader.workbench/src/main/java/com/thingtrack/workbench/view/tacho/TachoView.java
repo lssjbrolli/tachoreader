@@ -17,6 +17,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
 import org.tacografo.file.exception.ExceptionFileExist;
+import org.tacografo.file.exception.ExceptionVehicleNotExist;
 import org.tepi.filtertable.FilterTable;
 import org.tepi.filtertable.datefilter.DateInterval;
 
@@ -46,8 +47,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.google.common.eventbus.Subscribe;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.Vehicle;
 import com.thingtrack.tachoreader.service.api.DriverService;
 import com.thingtrack.tachoreader.service.api.TachoService;
+import com.thingtrack.tachoreader.service.api.VehicleService;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NView;
 import com.thingtrack.workbench.component.ConfirmForm;
@@ -70,6 +73,7 @@ import com.thingtrack.workbench.component.ToolbarTacho.ClickUnselectAllTachosLis
 import com.thingtrack.workbench.event.DashboardEvent.ProfileUpdatedEvent;
 import com.thingtrack.workbench.event.DashboardEventBus;
 import com.thingtrack.workbench.view.drivers.DriverForm;
+import com.thingtrack.workbench.view.vehicle.VehicleForm;
 
 @Component
 @Scope("prototype")
@@ -107,6 +111,9 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 	
 	@Autowired
 	private DriverService driverService;
+	
+	@Autowired
+	private VehicleService vehicleService;
 	
 	private String tachosRepository = null;
 	private List<Tacho> tachos = null;
@@ -377,7 +384,7 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 
 	@SuppressWarnings({ "unused", "rawtypes" })
 	@Override
-	public void onFileUploaded(PluploadFile file) {
+	public void onFileUploaded(final PluploadFile file) {
 		try {			    	   	 
     	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
     	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
@@ -416,11 +423,72 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 													
 								try {			
 									Driver driver = event.getDomainEntity();
-									driver.setCreatedBy(WorkbenchUI.getCurrent().getUser()); // a bug in JPA
-									driver.setCreationDate(new Date());
 									
 									// insert entity
-									driver = driverService.save(driver);								
+									driver = driverService.save(driver);
+									
+									// retry insert the tacho file
+						    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
+	    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
+	    	   								  (File)file.getUploadedFile(), 
+	    	   								  file.getName(),
+	    	   								  tachosRepository);
+				
+						    	   	loadDatasource(tachoPaginationToolbar.getPageNumber(), tachoPaginationToolbar.getPageSize());
+				
+						    	   	isUploadError = false;
+						    	   	NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
+								} catch (final ExceptionVehicleNotExist ex) {
+									@SuppressWarnings("serial")
+									ConfirmForm vehicleConfirmForm = new ConfirmForm(getI18N().getMessage("com.thingtrack.workbench.view.tacho.TachoView.tittle.addVehicle"), getI18N().getMessage("com.thingtrack.workbench.view.tacho.TachoView.question.addVehicle"), new ConfirmForm.CloseConfirmFormListener() {
+										@Override
+										public void windowDialogClose(ConfirmForm.CloseWindowDialogEvent event) {						
+											if (event.getDialogResult() != ConfirmForm.DialogResult.YES)															
+									    		return;	
+											
+											// created selected item
+											Vehicle vehicle = vehicleService.createNewEntity(WorkbenchUI.getCurrent().getUser());
+											vehicle.setRegistration(ex.getRegistration());
+											
+											try {
+												@SuppressWarnings({ "serial" })
+												WindowForm<Vehicle> vehicleWindow = new WindowForm<Vehicle>(getI18N().getMessage("com.thingtrack.workbench.view.vehicle.VehicleView.tittle.add"), getI18N(), vehicle, new VehicleForm(), new WindowForm.CloseWindowDialogListener<Vehicle>() {
+													@Override
+													public void windowDialogClose(WindowForm<Vehicle>.CloseWindowDialogEvent<Vehicle> event) {					
+														if (event.getDialogResult() != WindowForm.DialogResult.OK)															
+												    		return;					    		
+																			
+														try {			
+															Vehicle vehicle = event.getDomainEntity();
+															
+															// insert entity
+															vehicle = vehicleService.save(vehicle);
+															
+															// retry insert the tacho file
+												    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
+							    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
+							    	   								  (File)file.getUploadedFile(), 
+							    	   								  file.getName(),
+							    	   								  tachosRepository);
+										
+												    	   	loadDatasource(tachoPaginationToolbar.getPageNumber(), tachoPaginationToolbar.getPageSize());
+										
+												    	   	isUploadError = false;
+												    	   	NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
+														} catch (ExceptionVehicleNotExist ex) {
+															
+														} catch (Exception e) {
+															// TODO Auto-generated catch block
+															e.printStackTrace();
+														}
+													}
+												});
+											} catch (Exception e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+										}
+									});
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();

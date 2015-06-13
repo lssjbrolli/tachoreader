@@ -69,6 +69,7 @@ public class VehicleServiceImpl implements VehicleService {
 		
 		vehicle.setOrganization(user.getOrganizationDefault());
 		vehicle.setCreatedBy(user);
+		vehicle.setCreationDate(new Date());
 		vehicle.setActive(true);
 		
 		return vehicle;
