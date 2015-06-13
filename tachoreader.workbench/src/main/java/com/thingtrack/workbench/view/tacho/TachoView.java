@@ -15,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
+import org.tacografo.file.exception.ExceptionDriverNotExist;
+import org.tacografo.file.exception.ExceptionFileExist;
 import org.tepi.filtertable.FilterTable;
 import org.tepi.filtertable.datefilter.DateInterval;
 
 import pl.exsio.plupload.Plupload.FileUploadedListener;
+import pl.exsio.plupload.Plupload.UploadCompleteListener;
 import pl.exsio.plupload.PluploadFile;
 import ru.xpoft.vaadin.VaadinView;
 
@@ -69,7 +72,7 @@ import com.thingtrack.workbench.event.DashboardEventBus;
 public class TachoView extends AbstractI18NView implements View, ClickRefreshListener, 
 			ClickChangePageSizeListener, ClickFirstPageListener, ClickPreviousPageListener, 
 			ClickNextPageListener, ClickLastPageListener, ClickFilterListener, 
-			ClickSelectAllTachosListener, ClickUnselectAllTachosListener, FileUploadedListener {
+			ClickSelectAllTachosListener, ClickUnselectAllTachosListener, FileUploadedListener, UploadCompleteListener {
 	
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
@@ -101,6 +104,7 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 	private List<Tacho> tachos = null;
 	private BeanItemContainer<Tacho> tachoContainer = new BeanItemContainer<Tacho>(Tacho.class);
 	
+	private boolean isUploadError = false;
 	/**
 	 * The constructor should first build the main layout, set the
 	 * composition root and then do any custom initialization.
@@ -139,7 +143,9 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 		toolbar.addRefreshListener(this);
 		toolbar.addFilterListener(this);
 		
+		// tachos toolbar events
 		toolbarTacho.addUploadTachosListener(this);
+		toolbarTacho.addUploadCompleteListener(this);
 		toolbarTacho.addSelectAllTachosListener(this);
 		toolbarTacho.addUnselectAllTachosListener(this);
 		
@@ -372,11 +378,26 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 			
     	   	loadDatasource(tachoPaginationToolbar.getPageNumber(), tachoPaginationToolbar.getPageSize());
 			
+    	   	isUploadError = false;
     	   	NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
-		} catch (Exception e) {			
+    	   	
+		} catch (ExceptionDriverNotExist e) {	
+			isUploadError = true;
+			NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + e.getCardNumber() + " registered");					
+		} catch (ExceptionFileExist e) {	
+			isUploadError = true;
+			NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + e.getFileName() + " has already been registered");					
+		} catch (Exception e) {
+			isUploadError =true;
 			NotificationHelper.sendErrorNotification("Tacho View", e.getMessage());					
-		}	
-		
+		}			
+	}
+	
+	@Override
+	public void onUploadComplete() {
+		if (!isUploadError) {
+			NotificationHelper.sendInformationNotification("Tacho View", "upload is completed!");
+		}		
 	}
 	
 	@Override

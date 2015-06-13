@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import pl.exsio.plupload.Plupload;
 import pl.exsio.plupload.Plupload.FileUploadedListener;
+import pl.exsio.plupload.Plupload.UploadCompleteListener;
 import pl.exsio.plupload.PluploadError;
 import pl.exsio.plupload.PluploadFile;
 import pl.exsio.plupload.helper.filter.PluploadFilter;
@@ -44,7 +45,7 @@ public class ToolbarTacho extends AbstractI18NCustomComponent {
 	private ClickSelectAllTachosListener clickSelectAllTachosListener = null;
 	private ClickUnselectAllTachosListener clickUnselectAllTachosListener = null;
 	private FileUploadedListener fileUploadedListener = null;
-	
+	private UploadCompleteListener uploadCompleteListener = null;
 	/**
 	 * The constructor should first build the main layout, set the
 	 * composition root and then do any custom initialization.
@@ -58,7 +59,7 @@ public class ToolbarTacho extends AbstractI18NCustomComponent {
 
 		// TODO add user code here		
 		btnUpload.setMultiSelection(true);
-		btnUpload.setPreventDuplicates(true);
+		//btnUpload.setPreventDuplicates(true);
 		btnUpload.addFilter(new PluploadFilter("Tachograph files", "ddd,tgd,crd,esm,dc,tdc"));
 		btnUpload.addStyleName("danger");
 		
@@ -110,8 +111,9 @@ public class ToolbarTacho extends AbstractI18NCustomComponent {
 		//notify, when the upload process is completed
 		btnUpload.addUploadCompleteListener(new Plupload.UploadCompleteListener() {
 		       @Override
-		       public void onUploadComplete() {			    	
-			    	NotificationHelper.sendInformationNotification("Tacho View", "upload is completed!");
+		       public void onUploadComplete() {
+		    	   if (uploadCompleteListener != null)
+		    		   uploadCompleteListener.onUploadComplete();		    	   
 		       }
 		});
 		
@@ -127,6 +129,9 @@ public class ToolbarTacho extends AbstractI18NCustomComponent {
 	// navigation add listener toolbar	
 	public void addUploadTachosListener(FileUploadedListener listener) {
 		this.fileUploadedListener = listener;		
+	}
+	public void addUploadCompleteListener(UploadCompleteListener listener) {
+		this.uploadCompleteListener = listener;		
 	}
 	public void addSelectAllTachosListener(ClickSelectAllTachosListener listener) {
 		this.clickSelectAllTachosListener = listener;		

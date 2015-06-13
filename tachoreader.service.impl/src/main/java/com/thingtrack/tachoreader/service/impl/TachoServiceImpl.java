@@ -18,6 +18,8 @@ import org.tacografo.file.cardblockdriver.CardIdentification;
 import org.tacografo.file.cardblockdriver.CardVehiclesUsed;
 import org.tacografo.file.cardblockdriver.subblock.CardVehicleRecord;
 import org.tacografo.file.error.ErrorFile;
+import org.tacografo.file.exception.ExceptionDriverNotExist;
+import org.tacografo.file.exception.ExceptionFileExist;
 
 import com.thingtrack.tachoreader.dao.api.DriverDao;
 import com.thingtrack.tachoreader.dao.api.TachoDao;
@@ -82,7 +84,7 @@ public class TachoServiceImpl implements TachoService {
 	
 	@Override
 	public List<Tacho> setRegisterTacho(String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {				
-		List<Tacho> tachos = new ArrayList<Tacho>();
+		List<Tacho> tachos = new ArrayList<Tacho>();		
 		
 		try {    	   							
 			// STEP01: check agent data and get driver entity
@@ -109,6 +111,8 @@ public class TachoServiceImpl implements TachoService {
 			String tachoHolderName = cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderName().getHolderFirstNames() + " " + cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderName().getHolderSurname();
 			String tachoDriverIdentification = cardBlockIdentification.getCardNumber().toString();
 			Date tachoCardExpiryDate = cardBlockIdentification.getCardExpiryDate();
+			SimpleDateFormat formatterDriverBithDate = new SimpleDateFormat("yyyy-MM-dd");
+			Date tachoDriverBithDate = formatterDriverBithDate.parse(cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderBirthDate());
 			
 			CardVehicleRecord cardVehicleRecord = cardVehiclesUsed.getCardVehicleRecords().get(cardVehiclesUsed.getVehiclePointerNewestRecord()-1);
 			
@@ -119,29 +123,32 @@ public class TachoServiceImpl implements TachoService {
 				
 				// the tacho identification card is not the same that the driver one
 				if (!tachoDriver.getCardNumber().equals(tachoDriverIdentification)) 
-					throw new Exception("The identification card " + tachoDriverIdentification + " from your tacho is not the same as your " + tachoDriver.getCardNumber() + " identification card registered");
+					throw new Exception("The identification card " + tachoDriverIdentification + " from your tacho is not the same as yours " + tachoDriver.getCardNumber() + " identification card registered. The Tacho is from " + tachoHolderName);
 			}
 			else {
 				try {
 					tachoDriver = driverDao.getByCardNumber(tachoDriverIdentification);
 				}
 				catch(Exception ex) {
-					throw new Exception("There is no driver with this identification card " + tachoDriverIdentification + " registered");
+					//throw new Exception("There is no driver with this identification card " + tachoDriverIdentification + " registered");
+					throw new ExceptionDriverNotExist(tachoHolderName, tachoDriverIdentification, tachoCardExpiryDate, tachoDriverBithDate);
 				}
 			}
 						
 			// check the driver expiry card is out of date
-			if (!tachoDriver.getCardExpiryDate().after(new Date())) {
+			if (!tachoDriver.getCardExpiryDate().after(new Date())) {	
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-				
 				throw new Exception("The expiry " + formatter.format(tachoDriver.getCardExpiryDate()) + " of your identification card " + tachoDriverIdentification + " is out of date");
 			}
 			
 			try
 			{
-				tachoDao.getByFile(tachoFile.getName());
+				tachoDao.getByFile(fileName);
 				
-				throw new Exception("The tacho " + tachoFile.getName() + " has already been registered");
+				//throw new Exception("The tacho " + fileName + " has already been registered");
+				throw new ExceptionFileExist(fileName);
+			} catch (ExceptionFileExist ex) {	
+				throw ex;
 			}
 			catch (Exception ex) {								
 			}
@@ -168,7 +175,9 @@ public class TachoServiceImpl implements TachoService {
 			throw new Exception("Error uploading the tacho", e);
 		} catch (IOException e) {			
 			throw new Exception("Error copying the tacho", e);
-		} 	
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new Exception("Tacho is corrupted", e);
+		}
 		
 		return tachos;
 	}
