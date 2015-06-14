@@ -27,12 +27,12 @@ import com.thingtrack.workbench.event.DashboardEvent.UserLoginRequestedEventExce
 import com.thingtrack.workbench.view.LoginView;
 import com.thingtrack.workbench.view.MainView;
 import com.thingtrack.workbench.component.Broadcaster;
-import com.thingtrack.workbench.domain.DashboardNotification;
 import com.thingtrack.tachoreader.domain.Administrator;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.UserService;
 import com.thingtrack.workbench.event.DashboardEvent.TachoFileEvent;
+
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
