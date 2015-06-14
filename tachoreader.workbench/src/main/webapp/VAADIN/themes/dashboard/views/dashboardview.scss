@@ -4,52 +4,6 @@
     padding: $view-padding;
     overflow: visible;
 
-    .sparks {
-      @include valo-panel-style;
-      margin-bottom: round($view-padding / 3);
-
-      @include width-range($max: 680px) {
-        .spark {
-          width: 50%;
-        }
-        .spark:nth-child(2n+1) {
-          border-left: none;
-        }
-        .spark:nth-child(n+3) {
-          border-top: valo-border($strength: 0.3);
-        }
-      }
-
-      @include width-range($max: 270px) {
-        .spark {
-          width: 100%;
-          border-left: none;
-          border-top: valo-border($strength: 0.3);
-
-          &:first-child {
-            border-top: none;
-          }
-        }
-      }
-    }
-
-    .spark {
-      float: left;
-      text-align: center;
-      width: 25%;
-      padding: $v-layout-spacing-vertical $v-layout-spacing-horizontal;
-      border-left: valo-border($strength: 0.3);
-      line-height: 1.35;
-
-      > tbody {
-        display: inline-block;
-      }
-
-      &:first-child {
-        border-left: none;
-      }
-    }
-
     .dashboard-panel-toolbar {
       padding: 1px 0 1px round($v-unit-size / 1.8);
       height: $v-unit-size + 2px;
@@ -71,34 +25,6 @@
 
         .v-table, .v-table-table {
           background: transparent;
-        }
-      }
-
-      .top10-revenue {
-        .card {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        .v-table-table {
-          @include box-shadow(none);
-        }
-
-        .v-table-cell-wrapper {
-          padding-left: round($view-padding / 2);
-          padding-right: round($view-padding / 2);
-        }
-
-        .v-table-cell-content {
-          border-color: first-color(valo-border($strength: 0.3));
-        }
-
-        .v-table-cell-content-rowheader {
-          color: valo-font-color($v-app-background-color, 0.4);
-
-          .v-table-cell-wrapper {
-            padding-right: 0;
-          }
         }
       }
 
@@ -155,7 +81,6 @@
         }
       }
     }
-
   }
 
   .dashboard-view {
@@ -232,7 +157,6 @@
       font-size: round($v-font-size * 0.8);
       color: valo-font-color($v-window-background-color, .5);
     }
-
   }
 
   // Need to use normal media queries because Responsive doesn't work for overlay elements just yet
@@ -241,6 +165,4 @@
       right: round($view-padding / 2);
     }
   }
-
-
 }

@@ -6,7 +6,6 @@ import com.google.common.eventbus.Subscribe;
 import com.thingtrack.workbench.event.DashboardEventBus;
 import com.thingtrack.workbench.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.thingtrack.workbench.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import com.thingtrack.workbench.view.dashboard.DashboardEdit.DashboardEditListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -33,7 +32,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public final class DashboardView extends Panel implements View, DashboardEditListener {
+public final class DashboardView extends Panel implements View {
 
     public static final String EDIT_ID = "dashboard-edit";
     public static final String TITLE_ID = "dashboard-title";
@@ -62,8 +61,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         root.addComponent(content);
         root.setExpandRatio(content, 1);
 
-        // All the open sub-windows should be closed whenever the root layout
-        // gets clicked.
+        // All the open sub-windows should be closed whenever the root layout gets clicked.
         root.addLayoutClickListener(new LayoutClickListener() {
             @Override
             public void layoutClick(final LayoutClickEvent event) {
@@ -85,8 +83,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         header.addComponent(titleLabel);
 
         notificationsButton = buildNotificationsButton();
-        Component edit = buildEditButton();
-        HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
+        HorizontalLayout tools = new HorizontalLayout(notificationsButton);
         tools.setSpacing(true);
         tools.addStyleName("toolbar");
         header.addComponent(tools);
@@ -105,34 +102,23 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
         return result;
     }
 
-    private Component buildEditButton() {
-        Button result = new Button();
-        result.setId(EDIT_ID);
-        result.setIcon(FontAwesome.EDIT);
-        result.addStyleName("icon-edit");
-        result.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        result.setDescription("Edit Dashboard");
-        result.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                getUI().addWindow(
-                        new DashboardEdit(DashboardView.this, titleLabel
-                                .getValue()));
-            }
-        });
-        return result;
-    }
-
     private Component buildContent() {
         dashboardPanels = new CssLayout();
         dashboardPanels.addStyleName("dashboard-panels");
         Responsive.makeResponsive(dashboardPanels);
 
+        dashboardPanels.addComponent(buildTestPanel());
         dashboardPanels.addComponent(buildNotes());
 
         return dashboardPanels;
     }
 
+    private Component buildTestPanel() {
+    	VerticalLayout testPanel = new VerticalLayout();
+    	testPanel.setSizeFull();
+    	
+    	return createContentWrapper(testPanel);
+    }
     private Component buildNotes() {
         TextArea notes = new TextArea("Notes");
         notes.setValue("Remember to:\n· Zoom in and out in the Sales view\n· Filter the transactions and drag a set of them to the Reports tab\n· Create a new report\n· Change the schedule of the movie theater");
@@ -276,11 +262,6 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
     @Override
     public void enter(final ViewChangeEvent event) {
         notificationsButton.updateNotificationsCount(null);
-    }
-
-    @Override
-    public void dashboardNameEdited(final String name) {
-        titleLabel.setValue(name);
     }
 
     private void toggleMaximized(final Component panel, final boolean maximized) {
