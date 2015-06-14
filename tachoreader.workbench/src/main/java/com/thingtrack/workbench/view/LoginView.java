@@ -375,14 +375,15 @@ public class LoginView extends AbstractI18NCustomComponent {
 	            		return;
 	            	
 		    	   try {			    	   	 
-			    	   	List<Tacho> tachos = tachoService.setRegisterTacho(tachoUsernameField.getValue(), 
-			    	   								  tachoPasswordField.getValue(), 
-			    	   								  (File)file.getUploadedFile(), 
-			    	   								  file.getName(),
-			    	   								  tachoRepository);
+			    	   	List<Tacho> tachos = tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
+			    	   			                                           tachoUsernameField.getValue(), 
+								    	   								   tachoPasswordField.getValue(), 
+								    	   								   (File)file.getUploadedFile(), 
+								    	   								   file.getName(),
+								    	   								   tachoRepository);
 				    	// Broadcast tachos inserted
 						for (Tacho tacho : tachos)
-				           Broadcaster.broadcast(tacho);
+							Broadcaster.broadcast(tacho);
 						
 						NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
 					} catch (ExceptionDriverNotExist e) {	

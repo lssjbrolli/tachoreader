@@ -85,7 +85,7 @@ public class TachoServiceImpl implements TachoService {
 	}
 	
 	@Override
-	public List<Tacho> setRegisterTacho(String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {				
+	public List<Tacho> setRegisterTacho(User user, String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {				
 		List<Tacho> tachos = new ArrayList<Tacho>();		
 		
 		try {    	   							
@@ -122,7 +122,7 @@ public class TachoServiceImpl implements TachoService {
 			Driver tachoDriver = null;
 			if (tachoUser.getAgent() instanceof Driver) {
 				tachoDriver = (Driver) tachoUser.getAgent();
-				
+								
 				// the tacho identification card is not the same that the driver one
 				if (!tachoDriver.getCardNumber().equals(tachoDriverIdentification)) 
 					throw new Exception("The identification card " + tachoDriverIdentification + " from your tacho is not the same as yours " + tachoDriver.getCardNumber() + " identification card registered. The Tacho is from " + tachoHolderName);
@@ -130,6 +130,10 @@ public class TachoServiceImpl implements TachoService {
 			else {
 				try {
 					tachoDriver = driverDao.getByCardNumber(tachoDriverIdentification);
+					
+					// check the organization of the tacho
+					if (tachoDriver.getOrganization().getId() != user.getOrganizationDefault().getId())
+						throw new Exception("The driver card " + tachoDriverIdentification + " from your tacho is not registered in your organization " + user.getOrganizationDefault().getName());
 				}
 				catch(Exception ex) {
 					throw new ExceptionDriverNotExist(tachoHolderName, tachoDriverIdentification, tachoCardExpiryDate, tachoDriverBithDate);
@@ -141,7 +145,7 @@ public class TachoServiceImpl implements TachoService {
 				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 				throw new Exception("The expiry " + formatter.format(tachoDriver.getCardExpiryDate()) + " of your identification card " + tachoDriverIdentification + " is out of date");
 			}
-			
+							
 			try
 			{
 				tachoDao.getByFile(fileName);

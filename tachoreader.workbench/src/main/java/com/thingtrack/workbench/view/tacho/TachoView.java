@@ -386,7 +386,8 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 	@Override
 	public void onFileUploaded(final PluploadFile file) {
 		try {			    	   	 
-    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
+    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
+    	   			                      WorkbenchUI.getCurrent().getUser().getUsername(), 
     	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
     	   								  (File)file.getUploadedFile(), 
     	   								  file.getName(),
@@ -428,11 +429,12 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 									driver = driverService.save(driver);
 									
 									// retry insert the tacho file
-						    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
-	    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
-	    	   								  (File)file.getUploadedFile(), 
-	    	   								  file.getName(),
-	    	   								  tachosRepository);
+						    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
+											    	   			  WorkbenchUI.getCurrent().getUser().getUsername(), 
+						    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
+						    	   								  (File)file.getUploadedFile(), 
+						    	   								  file.getName(),
+						    	   								  tachosRepository);
 				
 						    	   	loadDatasource(tachoPaginationToolbar.getPageNumber(), tachoPaginationToolbar.getPageSize());
 				
@@ -465,11 +467,12 @@ public class TachoView extends AbstractI18NView implements View, ClickRefreshLis
 															vehicle = vehicleService.save(vehicle);
 															
 															// retry insert the tacho file
-												    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser().getUsername(), 
-							    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
-							    	   								  (File)file.getUploadedFile(), 
-							    	   								  file.getName(),
-							    	   								  tachosRepository);
+												    	   	tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
+																	    	   			  WorkbenchUI.getCurrent().getUser().getUsername(), 
+												    	   								  WorkbenchUI.getCurrent().getUser().getPassword(), 
+												    	   								  (File)file.getUploadedFile(), 
+												    	   								  file.getName(),
+												    	   								  tachosRepository);
 										
 												    	   	loadDatasource(tachoPaginationToolbar.getPageNumber(), tachoPaginationToolbar.getPageSize());
 										

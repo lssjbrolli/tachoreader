@@ -48,6 +48,8 @@ public final class DashboardView extends Panel implements View {
     private final VerticalLayout root;
     private Window notificationsWindow;
 
+    private VerticalLayout notificationLayout;
+    
     public DashboardView() {
         addStyleName(ValoTheme.PANEL_BORDERLESS);
         setSizeFull();
@@ -110,9 +112,9 @@ public final class DashboardView extends Panel implements View {
     private Component buildContent() {
         dashboardPanels = new CssLayout();
         dashboardPanels.addStyleName("dashboard-panels");
-        Responsive.makeResponsive(dashboardPanels);
+        //Responsive.makeResponsive(dashboardPanels);
 
-        dashboardPanels.addComponent(buildTestPanel());
+        //dashboardPanels.addComponent(buildTestPanel());
         dashboardPanels.addComponent(buildNotes());
 
         return dashboardPanels;
@@ -125,12 +127,13 @@ public final class DashboardView extends Panel implements View {
     	return createContentWrapper(testPanel);
     }
     private Component buildNotes() {
-        TextArea notes = new TextArea("Notes");
-        notes.setValue("Remember to:\n· Zoom in and out in the Sales view\n· Filter the transactions and drag a set of them to the Reports tab\n· Create a new report\n· Change the schedule of the movie theater");
+        TextArea notes = new TextArea("Alarmas");
+        notes.setValue("Recuerda que:\n· El conductor VERDAYES ZAPICO, JOSE MARIA hace 23 días que no sube ningún tacho\n· El vehículo 9977FWT ha conducido 230 km en 1 días\n· El conductor DIEGO ANTONIO MIÑANO MORENO no ha descansado las horas reglamentarias el día 20/08/2015");
         notes.setSizeFull();
         notes.addStyleName(ValoTheme.TEXTAREA_BORDERLESS);
         Component panel = createContentWrapper(notes);
         panel.addStyleName("notes");
+        panel.setSizeFull(); // TODO
         return panel;
     }
 
@@ -204,8 +207,8 @@ public final class DashboardView extends Panel implements View {
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
 
-        final VerticalLayout notificationLayout = new VerticalLayout();
         for (Tacho notification : WorkbenchUI.getCurrent().getNotifications()) {
+        	notificationLayout = new VerticalLayout();
             notificationLayout.addStyleName("notification-item");
 
             Label titleLabel = new Label(notification.getDriver().getName());

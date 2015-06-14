@@ -20,6 +20,6 @@ public interface TachoService {
 			 Date creationDateFrom, Date creationDateTo) throws Exception;
 	public Tacho save(Tacho tacho) throws Exception;
 	public void delete(Tacho tacho) throws Exception;
-	public List<Tacho> setRegisterTacho(String code, String password, File file, String fileName, String tachoRepository) throws Exception;
+	public List<Tacho> setRegisterTacho(User user, String code, String password, File file, String fileName, String tachoRepository) throws Exception;
 	public FileInputStream setZipTachos(User user, List<Tacho> tachos, String tachosRepository) throws Exception;
 }
