@@ -1,11 +1,16 @@
 package com.thingtrack.workbench.view.dashboard;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
+import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.event.DashboardEventBus;
 import com.thingtrack.workbench.event.DashboardEvent.CloseOpenWindowsEvent;
 import com.thingtrack.workbench.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import com.thingtrack.workbench.event.DashboardEvent.TachoFileEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -199,37 +204,35 @@ public final class DashboardView extends Panel implements View {
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
 
-        //Collection<DashboardNotification> notifications = WorkbenchUI.getDataProvider().getNotifications();
-        DashboardEventBus.post(new NotificationsCountUpdatedEvent());
-
-        /*for (DashboardNotification notification : notifications) {
-            VerticalLayout notificationLayout = new VerticalLayout();
+        final VerticalLayout notificationLayout = new VerticalLayout();
+        for (Tacho notification : WorkbenchUI.getCurrent().getNotifications()) {
             notificationLayout.addStyleName("notification-item");
 
-            Label titleLabel = new Label(notification.getFirstName() + " "
-                    + notification.getLastName() + " "
-                    + notification.getAction());
+            Label titleLabel = new Label(notification.getDriver().getName());
             titleLabel.addStyleName("notification-title");
 
-            Label timeLabel = new Label(notification.getPrettyTime());
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Label timeLabel = new Label(df.format(notification.getCreationDate()));
             timeLabel.addStyleName("notification-time");
 
-            Label contentLabel = new Label(notification.getContent());
+            Label contentLabel = new Label(notification.getVehicle().getRegistration());
             contentLabel.addStyleName("notification-content");
 
-            notificationLayout.addComponents(titleLabel, timeLabel,
-                    contentLabel);
+            notificationLayout.addComponents(titleLabel, timeLabel, contentLabel);
             notificationsLayout.addComponent(notificationLayout);
-        }*/
+        }
 
         HorizontalLayout footer = new HorizontalLayout();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth("100%");
-        Button showAll = new Button("View All Notifications",
+        Button showAll = new Button("Clear All Notifications",
                 new ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        Notification.show("Not implemented in this demo");
+                    	WorkbenchUI.getCurrent().getNotifications().clear();
+                    	notificationsButton.setUnreadCount(0); 
+                    	notificationLayout.removeAllComponents();
+                    	notificationsWindow.close();
                     }
                 });
         showAll.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
@@ -250,8 +253,7 @@ public final class DashboardView extends Panel implements View {
         }
 
         if (!notificationsWindow.isAttached()) {
-            notificationsWindow.setPositionY(event.getClientY()
-                    - event.getRelativeY() + 40);
+            notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() + 40);
             getUI().addWindow(notificationsWindow);
             notificationsWindow.focus();
         } else {
@@ -296,11 +298,19 @@ public final class DashboardView extends Panel implements View {
         }
 
         @Subscribe
-        public void updateNotificationsCount(
-                final NotificationsCountUpdatedEvent event) {
+        public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
             //setUnreadCount(WorkbenchUI.getDataProvider().getUnreadNotificationsCount());
         }
 
+        @Subscribe
+        public void updateNotificationsTacho(final TachoFileEvent event) {
+        	// only get tacho events from my organization
+        	if (event.getTacho().getDriver().getOrganization().getId() == WorkbenchUI.getCurrent().getUser().getOrganizationDefault().getId()) {
+        		WorkbenchUI.getCurrent().getNotifications().add(event.getTacho());
+        		setUnreadCount(WorkbenchUI.getCurrent().getNotifications().size());	        	
+        	}
+        }
+        
         public void setUnreadCount(final int count) {
             setCaption(String.valueOf(count));
 

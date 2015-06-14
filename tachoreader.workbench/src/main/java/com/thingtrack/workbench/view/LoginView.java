@@ -1,6 +1,7 @@
 package com.thingtrack.workbench.view;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -34,6 +35,7 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.AdministratorService;
 import com.thingtrack.tachoreader.service.api.TachoService;
@@ -349,10 +351,7 @@ public class LoginView extends AbstractI18NCustomComponent {
 		tachoButton.addFilter(new PluploadFilter("Tachograph files", "ddd,tgd,crd,esm,dc,tdc"));		
 		tachoButton.addFileUploadedListener(new Plupload.FileUploadedListener() {
 		       @Override
-		       public void onFileUploaded(PluploadFile file) {
-		    	   // Broadcast the message
-		           //Broadcaster.broadcast(file.getName());
-		           
+		       public void onFileUploaded(PluploadFile file) {		           
 		    	   // check validation form
 	               if (!tachoUsernameField.isValid()) {
 	            		tachoUsernameField.setRequiredError("The driver code is required");
@@ -376,13 +375,16 @@ public class LoginView extends AbstractI18NCustomComponent {
 	            		return;
 	            	
 		    	   try {			    	   	 
-			    	   	tachoService.setRegisterTacho(tachoUsernameField.getValue(), 
+			    	   	List<Tacho> tachos = tachoService.setRegisterTacho(tachoUsernameField.getValue(), 
 			    	   								  tachoPasswordField.getValue(), 
 			    	   								  (File)file.getUploadedFile(), 
 			    	   								  file.getName(),
-			    	   								  tachoRepository);			    	   				    	   
+			    	   								  tachoRepository);
+				    	// Broadcast tachos inserted
+						for (Tacho tacho : tachos)
+				           Broadcaster.broadcast(tacho);
 						
-							NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
+						NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
 					} catch (ExceptionDriverNotExist e) {	
 						errorTachoValidation = true;
 						

@@ -5,12 +5,15 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.workbench.WorkbenchUI;
+
 @SuppressWarnings("serial")
 public class Broadcaster implements Serializable {
     static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public interface BroadcastListener {
-        void receiveBroadcast(String message);
+        void receiveBroadcast(Tacho tacho);
     }
     
     private static LinkedList<BroadcastListener> listeners = new LinkedList<BroadcastListener>();
@@ -23,12 +26,12 @@ public class Broadcaster implements Serializable {
         listeners.remove(listener);
     }
     
-    public static synchronized void broadcast(final String message) {
+    public static synchronized void broadcast(final Tacho tacho) {
         for (final BroadcastListener listener: listeners)
             executorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    listener.receiveBroadcast(message);
+                	listener.receiveBroadcast(tacho);
                 }
             });
     }

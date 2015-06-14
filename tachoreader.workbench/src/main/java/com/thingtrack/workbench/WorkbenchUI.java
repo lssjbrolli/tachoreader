@@ -1,5 +1,7 @@
 package com.thingtrack.workbench;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.Cookie;
@@ -25,9 +27,12 @@ import com.thingtrack.workbench.event.DashboardEvent.UserLoginRequestedEventExce
 import com.thingtrack.workbench.view.LoginView;
 import com.thingtrack.workbench.view.MainView;
 import com.thingtrack.workbench.component.Broadcaster;
+import com.thingtrack.workbench.domain.DashboardNotification;
 import com.thingtrack.tachoreader.domain.Administrator;
+import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.UserService;
+import com.thingtrack.workbench.event.DashboardEvent.TachoFileEvent;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -61,6 +66,8 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
      */
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
+    private List<Tacho> tachoNotifications = new ArrayList<Tacho>();
+    
     private User user;
     
 	private I18N i18n;
@@ -88,6 +95,10 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
     
     public User getUser() {    	
     	return getCurrent().user;    	
+    }
+    
+    public List<Tacho> getNotifications() {    	
+    	return getCurrent().tachoNotifications;    	
     }
     
     public I18N getI18N() {
@@ -296,12 +307,13 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
     }
     
 	@Override
-	public void receiveBroadcast(final String message) {
+	public void receiveBroadcast(final Tacho tacho) {
 		// Must lock the session to execute logic safely
         access(new Runnable() {
             @Override
             public void run() {
-            	NotificationHelper.sendInformationNotification("Push Event", message);
+            	// post tacho register to show in dashboard events
+            	DashboardEventBus.post(new TachoFileEvent(tacho));
             }
         });
 		
