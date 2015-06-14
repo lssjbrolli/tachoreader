@@ -39,6 +39,7 @@ import com.thingtrack.tachoreader.service.api.AdministratorService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NCustomComponent;
+import com.thingtrack.workbench.component.Broadcaster;
 import com.thingtrack.workbench.component.NotificationHelper;
 import com.thingtrack.workbench.event.DashboardEvent.UserLoginRequestedEvent;
 import com.thingtrack.workbench.event.DashboardEvent.UserResetRequestedEvent;
@@ -349,7 +350,10 @@ public class LoginView extends AbstractI18NCustomComponent {
 		tachoButton.addFileUploadedListener(new Plupload.FileUploadedListener() {
 		       @Override
 		       public void onFileUploaded(PluploadFile file) {
-		    	   //  check validation form
+		    	   // Broadcast the message
+		           //Broadcaster.broadcast(file.getName());
+		           
+		    	   // check validation form
 	               if (!tachoUsernameField.isValid()) {
 	            		tachoUsernameField.setRequiredError("The driver code is required");
 	            		errorTachoValidation = true;

@@ -24,9 +24,11 @@ import com.thingtrack.workbench.event.DashboardEvent.UserLoginRequestedEvent;
 import com.thingtrack.workbench.event.DashboardEvent.UserLoginRequestedEventException;
 import com.thingtrack.workbench.view.LoginView;
 import com.thingtrack.workbench.view.MainView;
+import com.thingtrack.workbench.component.Broadcaster;
 import com.thingtrack.tachoreader.domain.Administrator;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.UserService;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
@@ -48,7 +50,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 @Component
 @Scope("prototype")
-public final class WorkbenchUI extends UI implements I18NListener {
+@Push
+public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.BroadcastListener {
 
     /*
      * This field stores an access to the dummy backend layer. In real
@@ -163,6 +166,9 @@ public final class WorkbenchUI extends UI implements I18NListener {
                 DashboardEventBus.post(new BrowserResizeEvent());
             }
         });
+        
+        // Register to receive broadcasts
+        Broadcaster.register(this);
     }
 
     private void rememberMe() {
@@ -279,6 +285,25 @@ public final class WorkbenchUI extends UI implements I18NListener {
 
 	@Override
 	public void localeChanged(I18N sender, Locale oldLocale, Locale newLocale) {		
+		
+	}
+
+	// Must also unregister when the UI expires    
+    @Override
+    public void detach() {
+    	Broadcaster.unregister(this);
+        super.detach();
+    }
+    
+	@Override
+	public void receiveBroadcast(final String message) {
+		// Must lock the session to execute logic safely
+        access(new Runnable() {
+            @Override
+            public void run() {
+            	NotificationHelper.sendInformationNotification("Push Event", message);
+            }
+        });
 		
 	}
 }
