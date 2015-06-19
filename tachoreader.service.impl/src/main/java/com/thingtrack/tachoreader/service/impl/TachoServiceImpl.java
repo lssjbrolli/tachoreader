@@ -6,8 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -16,21 +19,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tacografo.file.FileBlockTGD;
 import org.tacografo.file.cardblockdriver.CardIdentification;
 import org.tacografo.file.cardblockdriver.CardVehiclesUsed;
+import org.tacografo.file.cardblockdriver.subblock.ActivityChangeInfo;
+import org.tacografo.file.cardblockdriver.subblock.CardActivityDailyRecord;
 import org.tacografo.file.cardblockdriver.subblock.CardVehicleRecord;
 import org.tacografo.file.error.ErrorFile;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
 import org.tacografo.file.exception.ExceptionFileExist;
 import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
+import com.thingtrack.tachoreader.dao.api.DriverActivityDao;
 import com.thingtrack.tachoreader.dao.api.DriverDao;
 import com.thingtrack.tachoreader.dao.api.TachoDao;
 import com.thingtrack.tachoreader.dao.api.UserDao;
 import com.thingtrack.tachoreader.dao.api.VehicleDao;
 import com.thingtrack.tachoreader.domain.Driver;
+import com.thingtrack.tachoreader.domain.DriverActivity;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.domain.Vehicle;
+import com.thingtrack.tachoreader.service.api.DriverActivityService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 
 public class TachoServiceImpl implements TachoService {
@@ -46,6 +54,14 @@ public class TachoServiceImpl implements TachoService {
 	@Autowired
 	private TachoDao tachoDao;
 
+	@Autowired
+	private DriverActivityDao driverActivityDao;
+	
+	@Autowired
+	private DriverActivityService driverActivityService;
+	
+	final static Logger logger = Logger.getLogger("TachoServiceImpl");
+	
 	@Override
 	public List<Tacho> getAll(Organization organization) throws Exception {
 		return this.tachoDao.getAll(organization);
@@ -84,6 +100,51 @@ public class TachoServiceImpl implements TachoService {
 		this.tachoDao.delete(tacho);	
 	}
 	
+	private List<DriverActivity> registerDriverActivity(User user, Driver driver, Vehicle vehicle, Tacho tacho, ArrayList<CardActivityDailyRecord> cardActivityDailyRecords) {
+		List<DriverActivity> driverActivities = new ArrayList<DriverActivity>();
+		Calendar cal = Calendar.getInstance();
+		
+		for (CardActivityDailyRecord cardActivityDailyRecord : cardActivityDailyRecords) {
+			DriverActivity driverActivity = driverActivityService.createNewEntity(user);
+			
+			driverActivity.setDriver(driver);
+			driverActivity.setVehicle(vehicle);
+			driverActivity.setTacho(tacho);
+			driverActivity.setDistance(cardActivityDailyRecord.getActivityDayDistance());
+			driverActivity.setRecordDateFrom(cardActivityDailyRecord.getActivityRecordDate());
+			driverActivity.setRecordDateTo(cardActivityDailyRecord.getActivityRecordDate());
+			
+			logger.log(Level.SEVERE, cardActivityDailyRecord.getActivityChangeInfo().toString());
+			
+			for (ActivityChangeInfo activityChangeInfo : cardActivityDailyRecord.getActivityChangeInfo()) {
+				// set status
+				if (activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
+					driverActivity.setType(DriverActivity.TYPE.BREAK_REST);
+				else if (activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
+					driverActivity.setType(DriverActivity.TYPE.AVAILABLE);
+				else if (activityChangeInfo.getAa().equals("TRABAJO"))
+					driverActivity.setType(DriverActivity.TYPE.WORKING);
+				else if (activityChangeInfo.getAa().equals("CONDUCCIÓN"))
+					driverActivity.setType(DriverActivity.TYPE.DRIVING);
+				/*else if (activityChangeInfo.getAa().equals("?"))
+					driverActivity.setType(DriverActivity.TYPE.SHORT_BREAK);*/
+				else
+					driverActivity.setType(DriverActivity.TYPE.UNKNOWN);
+				
+				// set time value
+				String timeTacho = activityChangeInfo.getT();
+				String[] timeSplit = timeTacho.split(":");
+				
+				cal.setTime(driverActivity.getRecordDateFrom());
+				cal.add(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
+				cal.add(Calendar.MINUTE, Integer.parseInt(timeSplit[1]));
+				driverActivity.setRecordDateFrom(cal.getTime());
+			}
+		}
+		
+		return driverActivities;
+	}
+	
 	@Override
 	public List<Tacho> setRegisterTacho(User user, String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {				
 		List<Tacho> tachos = new ArrayList<Tacho>();		
@@ -104,7 +165,7 @@ public class TachoServiceImpl implements TachoService {
 			if (!tachoUser.getPassword().equals(password))
 				throw new Exception("The user password is not correct");
 			
-			// STEP02: parse download file and get data	blocks		
+			// STEP02: parse download file and get data	blocks					
 			FileBlockTGD fileBlockTGD = new FileBlockTGD(tachoFile.getPath());
 			
 			CardIdentification cardBlockIdentification = fileBlockTGD.getIdentification();
@@ -152,15 +213,15 @@ public class TachoServiceImpl implements TachoService {
 				
 				throw new ExceptionFileExist(fileName);
 			} catch (ExceptionFileExist ex) {	
-				throw ex;
+				throw new Exception("Error reading tacho file " + fileName, ex);
 			}
 			catch (Exception ex) {								
 			}
 			
 			// get vehicle from tacho
-			Vehicle vehicle = null;
+			Vehicle tachoVehicle = null;
 			try {
-				vehicle = vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
+				tachoVehicle = vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
 			} catch (Exception ex) {		
 				throw new ExceptionVehicleNotExist(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
 			}
@@ -168,12 +229,12 @@ public class TachoServiceImpl implements TachoService {
 			// STEP04: copy tacho file to the tachos organization repository			
 			FileUtils.copyFile(tachoFile, FileUtils.getFile(tachoRepository + "/" + tachoUser.getOrganizationDefault().getId(), fileName));			
 			
-			// STEP05: register the tacho file	
+			// STEP05: register the tacho file
+			Tacho tacho = null;
 			try {						
-				Tacho tacho = new Tacho();
-				
+				tacho = new Tacho();				
 				tacho.setDriver(tachoDriver);
-				tacho.setVehicle(vehicle); // get the last vehicle used
+				tacho.setVehicle(tachoVehicle); // get the last vehicle used
 				tacho.setFile(fileName);							
 				tacho.setCreatedBy(tachoUser);	
 				tacho.setCreationDate(new Date());
@@ -181,8 +242,19 @@ public class TachoServiceImpl implements TachoService {
 				tachos.add(save(tacho)); //TODO: how are registered the vehicles used in the driver card??
 			}
 			catch (Exception ex) {
-				throw new Exception("The vehicle " + cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber() + " is not registered");				
-			} 												
+				throw new Exception("The vehicle " + cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber() + " is not registered", ex);					
+			}
+			
+			//STEP06: register driver activity
+			try {
+				List<DriverActivity> driverActivities = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, fileBlockTGD.getDriver_activity_data().getActivityDailyRecords());
+				
+				for (DriverActivity driverActivity : driverActivities)
+					driverActivityDao.save(driverActivity);				
+				
+			} catch (Exception ex) {
+				throw new Exception("Error insert driver activity", ex);					
+			}			
 		} catch (ErrorFile e) {
 			throw new Exception("Error uploading the tacho", e);
 		} catch (IOException e) {			

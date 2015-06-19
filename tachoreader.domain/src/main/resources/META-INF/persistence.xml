@@ -15,6 +15,7 @@
 	    <class>com.thingtrack.tachoreader.domain.Driver</class>
 	    <class>com.thingtrack.tachoreader.domain.Vehicle</class>
 	    <class>com.thingtrack.tachoreader.domain.Tacho</class>
+	    <class>com.thingtrack.tachoreader.domain.DriverActivity</class>
 	    	    
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		

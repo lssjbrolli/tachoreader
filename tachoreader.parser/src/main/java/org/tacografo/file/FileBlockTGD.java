@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Clase encargada de interpretar los bytes de los ficheros de una tarjeta del tacografo
- * he interpretarlo segun REGLAMENTO (CE) No 1360/2002 DE LA COMISIÓN de 13 de junio de 2002
+ * he interpretarlo segun REGLAMENTO (CE) No 1360/2002 DE LA COMISIï¿½N de 13 de junio de 2002
  * en los diferentes bloques de datos segun dicho reglamento.
  * 
  * Nota:Donde podemos obtener directamente los bloques de memoria como propiedades de esta clase
@@ -196,8 +196,7 @@ public class FileBlockTGD {
 		while (existe_fid) {
 			// la lectura tiene que ser con readUnsignedShort debido a que
 			// los fid c108 y c100
-			// los detecta con signo y me los rellenas como ffffc108 y
-			// ffffc100
+			// los detecta con signo y me los rellenas como ffffc108 y ffffc100
 			int fid = entrada.readUnsignedShort();	
 			
 			existe_fid=this.existe_Fid(fid);			
@@ -210,8 +209,7 @@ public class FileBlockTGD {
 				entrada.read(datos, 0, longitud);
 				// tipo de bloque
 				if (tipo == 0) {
-					CardBlock block = FactoriaBloques.getFactoria(fid,
-							datos);
+					CardBlock block = FactoriaBloques.getFactoria(fid, datos);
 					if (block != null) {
 						this.lista_bloque.put(block.getFID(), block);
 					}
