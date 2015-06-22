@@ -16,9 +16,12 @@ public class DriverDaoImpl extends JpaDao<Driver, Integer> implements DriverDao 
 	@Override
 	public List<Driver> getAll(Organization organization) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
+		queryString.append(" WHERE p.active = 1");
 		
 		if (organization != null)
-			queryString.append(" WHERE p.organization = :organization");
+			queryString.append(" AND p.organization = :organization");
+		
+		queryString.append(" ORDER BY p.name");
 		
 		Query query = (Query) getEntityManager().createQuery(queryString.toString());
 		
