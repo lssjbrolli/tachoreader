@@ -3,6 +3,7 @@ package com.thingtrack.tachoreader.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @SuppressWarnings("serial")
 @Entity
@@ -40,6 +43,10 @@ public class CardActivityDaily extends Audit implements Serializable {
 	
 	@Column(name="DISTANCE", nullable=false)
 	private float distance;
+
+	@Column(name="DAILY_DATE", nullable=false)
+	@Temporal(TemporalType.DATE)
+	private Date dailyDate;
 	
 	@OneToMany(mappedBy="cardActivityDaily", cascade={CascadeType.ALL})	
 	private List<CardActivityDailyChange> cardActivityDailyChanges = new ArrayList<CardActivityDailyChange>();

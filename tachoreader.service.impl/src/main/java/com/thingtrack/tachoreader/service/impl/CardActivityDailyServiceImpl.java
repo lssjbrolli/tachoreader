@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.thingtrack.tachoreader.dao.api.CardActivityDailyDao;
 import com.thingtrack.tachoreader.dao.api.OrganizationDao;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
+import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
@@ -22,6 +23,11 @@ public class CardActivityDailyServiceImpl implements CardActivityDailyService {
 	@Override
 	public List<CardActivityDaily> getAll(Organization organization) throws Exception {
 		return this.cardActivityDailyDao.getAll(organization);
+	}
+	
+	@Override
+	public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date registerDate) throws Exception {
+		return this.cardActivityDailyDao.getCardActivityDailyByDriver(driver, registerDate);
 	}
 	
 	@Override

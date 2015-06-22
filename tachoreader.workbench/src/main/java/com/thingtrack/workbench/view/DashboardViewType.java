@@ -3,6 +3,7 @@ package com.thingtrack.workbench.view;
 import com.thingtrack.workbench.view.administrator.AdministratorView;
 import com.thingtrack.workbench.view.dashboard.DashboardView;
 import com.thingtrack.workbench.view.drivers.DriverView;
+import com.thingtrack.workbench.view.graph.GraphView;
 import com.thingtrack.workbench.view.reports.ReportsView;
 import com.thingtrack.workbench.view.tacho.TachoView;
 import com.thingtrack.workbench.view.vehicle.VehicleView;
@@ -16,6 +17,7 @@ public enum DashboardViewType {
     DRIVERS("drivers", DriverView.class, FontAwesome.USERS, false),
     VEHICLES("vehicles", VehicleView.class, FontAwesome.TRUCK, false),
     TACHOMETERS("tachos", TachoView.class, FontAwesome.TACHOMETER, false),
+    GRAPHS("graphs", GraphView.class, FontAwesome.BAR_CHART_O, false),
     REPORTS("reports", ReportsView.class, FontAwesome.FILE_TEXT_O, true);
 
     private final String viewName;

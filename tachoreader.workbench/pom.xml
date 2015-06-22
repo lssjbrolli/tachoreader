@@ -217,7 +217,17 @@
 		   <artifactId>exporter</artifactId>
 		   <version>0.0.5.TACHO</version>
 		</dependency>
-
+        <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-calendar-cval-2.0</artifactId>
+            <version>2.0.0.beta3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.addon</groupId>
+            <artifactId>vaadin-charts</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        
 		<dependency>
 			<groupId>org.peimari</groupId>
 			<artifactId>maddon</artifactId>

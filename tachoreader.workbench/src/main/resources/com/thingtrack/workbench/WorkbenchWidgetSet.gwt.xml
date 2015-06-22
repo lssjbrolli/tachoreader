@@ -31,4 +31,10 @@
     <inherits name="org.tepi.filtertable.gwt.FilterTableWidgetset" />
 
     <inherits name="pl.exsio.plupload.PluploadWidgetSet" />
+
+    <inherits name="com.vaadin.addon.charts.Widgetset" />
+
+    <inherits name="com.vaadin.addon.timeline.gwt.TimelineWidgetSet" />
+
+    <inherits name="com.vaadin.addon.calendar.gwt.CalendarWidgetset" />
 </module>
