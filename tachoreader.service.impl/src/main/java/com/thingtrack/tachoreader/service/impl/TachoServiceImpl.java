@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -27,18 +26,19 @@ import org.tacografo.file.exception.ExceptionDriverNotExist;
 import org.tacografo.file.exception.ExceptionFileExist;
 import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
-import com.thingtrack.tachoreader.dao.api.DriverActivityDao;
+import com.thingtrack.tachoreader.dao.api.CardActivityDailyDao;
 import com.thingtrack.tachoreader.dao.api.DriverDao;
 import com.thingtrack.tachoreader.dao.api.TachoDao;
 import com.thingtrack.tachoreader.dao.api.UserDao;
 import com.thingtrack.tachoreader.dao.api.VehicleDao;
+import com.thingtrack.tachoreader.domain.CardActivityDailyChange;
 import com.thingtrack.tachoreader.domain.Driver;
-import com.thingtrack.tachoreader.domain.DriverActivity;
+import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.domain.Vehicle;
-import com.thingtrack.tachoreader.service.api.DriverActivityService;
+import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 
 public class TachoServiceImpl implements TachoService {
@@ -55,10 +55,10 @@ public class TachoServiceImpl implements TachoService {
 	private TachoDao tachoDao;
 
 	@Autowired
-	private DriverActivityDao driverActivityDao;
+	private CardActivityDailyDao driverActivityDao;
 	
 	@Autowired
-	private DriverActivityService driverActivityService;
+	private CardActivityDailyService cardActivityDailyService;
 	
 	final static Logger logger = Logger.getLogger("TachoServiceImpl");
 	
@@ -100,49 +100,54 @@ public class TachoServiceImpl implements TachoService {
 		this.tachoDao.delete(tacho);	
 	}
 	
-	private List<DriverActivity> registerDriverActivity(User user, Driver driver, Vehicle vehicle, Tacho tacho, ArrayList<CardActivityDailyRecord> cardActivityDailyRecords) {
-		List<DriverActivity> driverActivities = new ArrayList<DriverActivity>();
+	private List<CardActivityDaily> registerDriverActivity(User user, Driver driver, Vehicle vehicle, Tacho tacho, ArrayList<CardActivityDailyRecord> cardActivityDailyRecords) {
+		List<CardActivityDaily> cardActivityDailys = new ArrayList<CardActivityDaily>();
 		Calendar cal = Calendar.getInstance();
 		
 		for (CardActivityDailyRecord cardActivityDailyRecord : cardActivityDailyRecords) {
-			DriverActivity driverActivity = driverActivityService.createNewEntity(user);
+			CardActivityDaily cardActivityDaily = cardActivityDailyService.createNewEntity(user);
 			
-			driverActivity.setDriver(driver);
-			driverActivity.setVehicle(vehicle);
-			driverActivity.setTacho(tacho);
-			driverActivity.setDistance(cardActivityDailyRecord.getActivityDayDistance());
-			driverActivity.setRecordDateFrom(cardActivityDailyRecord.getActivityRecordDate());
-			driverActivity.setRecordDateTo(cardActivityDailyRecord.getActivityRecordDate());
-			
-			logger.log(Level.SEVERE, cardActivityDailyRecord.getActivityChangeInfo().toString());
-			
+			cardActivityDaily.setDriver(driver);
+			cardActivityDaily.setVehicle(vehicle);
+			cardActivityDaily.setTacho(tacho);
+			cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());
+						
 			for (ActivityChangeInfo activityChangeInfo : cardActivityDailyRecord.getActivityChangeInfo()) {
-				// set status
+				CardActivityDailyChange cardActivityDailyChange = new CardActivityDailyChange();
+				
 				if (activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
-					driverActivity.setType(DriverActivity.TYPE.BREAK_REST);
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
 				else if (activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
-					driverActivity.setType(DriverActivity.TYPE.AVAILABLE);
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
 				else if (activityChangeInfo.getAa().equals("TRABAJO"))
-					driverActivity.setType(DriverActivity.TYPE.WORKING);
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
 				else if (activityChangeInfo.getAa().equals("CONDUCCIÓN"))
-					driverActivity.setType(DriverActivity.TYPE.DRIVING);
-				/*else if (activityChangeInfo.getAa().equals("?"))
-					driverActivity.setType(DriverActivity.TYPE.SHORT_BREAK);*/
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);
+				else if (activityChangeInfo.getAa().equals("?"))
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);				
 				else
-					driverActivity.setType(DriverActivity.TYPE.UNKNOWN);
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
 				
 				// set time value
 				String timeTacho = activityChangeInfo.getT();
 				String[] timeSplit = timeTacho.split(":");
 				
-				cal.setTime(driverActivity.getRecordDateFrom());
+				cal.setTime(cardActivityDailyRecord.getActivityRecordDate());
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+			    cal.set(Calendar.MINUTE, 0);
+			    cal.set(Calendar.SECOND, 0);
+			    cal.set(Calendar.MILLISECOND, 0);
 				cal.add(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
 				cal.add(Calendar.MINUTE, Integer.parseInt(timeSplit[1]));
-				driverActivity.setRecordDateFrom(cal.getTime());
+				cardActivityDailyChange.setRecordDate(cal.getTime());
+				
+				cardActivityDaily.addCardActivityDailyChange(cardActivityDailyChange);
 			}
+			
+			cardActivityDailys.add(cardActivityDaily);
 		}
 		
-		return driverActivities;
+		return cardActivityDailys;
 	}
 	
 	@Override
@@ -247,10 +252,10 @@ public class TachoServiceImpl implements TachoService {
 			
 			//STEP06: register driver activity
 			try {
-				List<DriverActivity> driverActivities = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, fileBlockTGD.getDriver_activity_data().getActivityDailyRecords());
+				List<CardActivityDaily> cardActivityDailys = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, fileBlockTGD.getDriver_activity_data().getActivityDailyRecords());
 				
-				for (DriverActivity driverActivity : driverActivities)
-					driverActivityDao.save(driverActivity);				
+				for (CardActivityDaily cardActivityDaily : cardActivityDailys)
+					driverActivityDao.save(cardActivityDaily);								
 				
 			} catch (Exception ex) {
 				throw new Exception("Error insert driver activity", ex);					

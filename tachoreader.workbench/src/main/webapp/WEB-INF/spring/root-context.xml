@@ -65,7 +65,7 @@
 	<bean id="driverDao" class="com.thingtrack.tachoreader.dao.impl.DriverDaoImpl" />
 	<bean id="vehicleDao" class="com.thingtrack.tachoreader.dao.impl.VehicleDaoImpl" />
 	<bean id="tachoDao" class="com.thingtrack.tachoreader.dao.impl.TachoDaoImpl" />
-	<bean id="driverActivityDao" class="com.thingtrack.tachoreader.dao.impl.DriverActivityDaoImpl" />
+	<bean id="cardActivityDailyDao" class="com.thingtrack.tachoreader.dao.impl.CardActivityDailyDaoImpl" />
 	
 	<!-- Define Tachoreader Business Service Layer-->
 	<bean id="organizationService" class="com.thingtrack.tachoreader.service.impl.OrganizationServiceImpl"/>			
@@ -74,5 +74,5 @@
 	<bean id="driverService" class="com.thingtrack.tachoreader.service.impl.DriverServiceImpl"/>
 	<bean id="vehicleService" class="com.thingtrack.tachoreader.service.impl.VehicleServiceImpl"/>
 	<bean id="tachoService" class="com.thingtrack.tachoreader.service.impl.TachoServiceImpl"/>
-	<bean id="driverActivityService" class="com.thingtrack.tachoreader.service.impl.DriverActivityServiceImpl"/>		
+	<bean id="cardActivityDailyService" class="com.thingtrack.tachoreader.service.impl.CardActivityDailyServiceImpl"/>		
 </beans>

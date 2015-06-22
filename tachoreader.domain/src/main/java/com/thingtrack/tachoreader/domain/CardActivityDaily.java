@@ -1,25 +1,25 @@
 package com.thingtrack.tachoreader.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="DRIVER_ACTIVITY")
-public class DriverActivity extends Audit implements Serializable {
+@Table(name="CARD_ACTIVITY_DAILY")
+public class CardActivityDaily extends Audit implements Serializable {
 
 	@Id
 	@Column(name="ID")
@@ -38,29 +38,11 @@ public class DriverActivity extends Audit implements Serializable {
 	@JoinColumn(name="TACHO_ID", nullable=false)	
 	private Tacho tacho;
 	
-	@Column(name="TYPE", nullable=false)
-	@Enumerated(EnumType.STRING)
-	private TYPE type;
-	
 	@Column(name="DISTANCE", nullable=false)
 	private float distance;
 	
-	@Column(name="RECORD_DATE_FROM", nullable=false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date recordDateFrom;
-	
-	@Column(name="RECORD_DATE_TO", nullable=false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date recordDateTo;
-	
-	public enum TYPE {
-		AVAILABLE,
-		DRIVING,
-	    WORKING,
-	    SHORT_BREAK,
-	    BREAK_REST,
-	    UNKNOWN
-	}
+	@OneToMany(mappedBy="cardActivityDaily", cascade={CascadeType.ALL})	
+	private List<CardActivityDailyChange> cardActivityDailyChanges = new ArrayList<CardActivityDailyChange>();
 	
 	public Integer getId() {
 		return id;
@@ -93,14 +75,6 @@ public class DriverActivity extends Audit implements Serializable {
 	public void setTacho(Tacho tacho) {
 		this.tacho = tacho;
 	}	
-	
-	public TYPE getType() {
-		return type;
-	}
-
-	public void setType(TYPE type) {
-		this.type = type;
-	}
 
 	public float getDistance() {
 		return distance;
@@ -110,22 +84,18 @@ public class DriverActivity extends Audit implements Serializable {
 		this.distance = distance;
 	}
 
-	public Date getRecordDateFrom() {
-		return recordDateFrom;
+	public List<CardActivityDailyChange> getCardActivityDailyChanges() {
+		return Collections.unmodifiableList(cardActivityDailyChanges);
 	}
-
-	public void setRecordDateFrom(Date recordDateFrom) {
-		this.recordDateFrom = recordDateFrom;
+	
+	public void addCardActivityDailyChange(CardActivityDailyChange cardActivityDailyChange) {
+		if (!cardActivityDailyChanges.contains(cardActivityDailyChange)) {
+			cardActivityDailyChange.setCardActivityDaily(this);
+			
+			cardActivityDailyChanges.add(cardActivityDailyChange);
+		}
 	}
-
-	public Date getRecordDateTo() {
-		return recordDateTo;
-	}
-
-	public void setRecordDateTo(Date recordDateTo) {
-		this.recordDateTo = recordDateTo;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "DriverActivity [id=" + id + "]";
@@ -145,14 +115,14 @@ public class DriverActivity extends Audit implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof DriverActivity))
+		if (!(obj instanceof CardActivityDaily))
 			return false;
-		DriverActivity other = (DriverActivity) obj;
+		CardActivityDaily other = (CardActivityDaily) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}	 
+	} 
 }

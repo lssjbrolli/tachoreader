@@ -5,14 +5,14 @@ import java.util.List;
 import javax.persistence.Query;
 
 import com.thingtrack.konekti.dao.template.JpaDao;
-import com.thingtrack.tachoreader.dao.api.DriverActivityDao;
-import com.thingtrack.tachoreader.domain.DriverActivity;
+import com.thingtrack.tachoreader.dao.api.CardActivityDailyDao;
+import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Organization;
 
-public class DriverActivityDaoImpl extends JpaDao<DriverActivity, Integer> implements DriverActivityDao {
+public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DriverActivity> getAll(Organization organization) throws Exception {
+	public List<CardActivityDaily> getAll(Organization organization) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		
 		if (organization != null)
