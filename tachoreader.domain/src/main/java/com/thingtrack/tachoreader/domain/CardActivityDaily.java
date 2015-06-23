@@ -93,6 +93,14 @@ public class CardActivityDaily extends Audit implements Serializable {
 		this.distance = distance;
 	}
 
+	public Date getDailyDate() {
+		return dailyDate;
+	}
+
+	public void setDailyDate(Date dailyDate) {
+		this.dailyDate = dailyDate;
+	}
+	
 	public List<CardActivityDailyChange> getCardActivityDailyChanges() {
 		return Collections.unmodifiableList(cardActivityDailyChanges);
 	}
@@ -133,5 +141,5 @@ public class CardActivityDaily extends Audit implements Serializable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	} 
+	}
 }

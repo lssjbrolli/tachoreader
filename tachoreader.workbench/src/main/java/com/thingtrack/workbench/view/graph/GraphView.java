@@ -1,7 +1,5 @@
 package com.thingtrack.workbench.view.graph;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ru.xpoft.vaadin.VaadinView;
 
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
 import com.thingtrack.tachoreader.service.api.DriverService;
@@ -103,21 +100,16 @@ public class GraphView extends AbstractI18NView implements View, ClickDriverActi
 			e.printStackTrace();
 			return;		
 		}
-		
-		/*Calendar cal = Calendar.getInstance();
-		cal.set(2013, 4, 19); // 19/05/2013
-		Date registerDate = cal.getTime();*/
-				
-		CardActivityDaily cardActivityDaily = null;		
+						
 		try {
-			cardActivityDaily = cardActivityDailyService.getCardActivityDailyByDriver(driverTest, event.getRegisterDate());
+			driverActivityDailyChart.clearGraph();
+			
+			CardActivityDaily cardActivityDaily = cardActivityDailyService.getCardActivityDailyByDriver(driverTest, event.getRegisterDate());
+			
+			driverActivityDailyChart.paintGraph(cardActivityDaily.getCardActivityDailyChanges());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
-		
-		driverActivityDailyChart.paintGraph(cardActivityDaily.getCardActivityDailyChanges());		
+			// DO NOTHING
+		}					
 	}
 	
 	@Override

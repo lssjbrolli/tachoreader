@@ -62,6 +62,9 @@ public class TachoServiceImpl implements TachoService {
 	
 	final static Logger logger = Logger.getLogger("TachoServiceImpl");
 	
+	final static String ZERO = "0";
+	final static String ONE = "1";
+	
 	@Override
 	public List<Tacho> getAll(Organization organization) throws Exception {
 		return this.tachoDao.getAll(organization);
@@ -110,23 +113,45 @@ public class TachoServiceImpl implements TachoService {
 			cardActivityDaily.setDriver(driver);
 			cardActivityDaily.setVehicle(vehicle);
 			cardActivityDaily.setTacho(tacho);
-			cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());
-						
+			cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());			
+			cardActivityDaily.setDailyDate(cardActivityDailyRecord.getActivityRecordDate());
+			
 			for (ActivityChangeInfo activityChangeInfo : cardActivityDailyRecord.getActivityChangeInfo()) {
 				CardActivityDailyChange cardActivityDailyChange = new CardActivityDailyChange();
 				
-				if (activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
+				if (activityChangeInfo.getS().equals("conductor"))
+					cardActivityDailyChange.setSlot(CardActivityDailyChange.SLOT.FIRST_DRIVER);
+				else if (activityChangeInfo.getS().equals("segundo conductor"))
+					cardActivityDailyChange.setSlot(CardActivityDailyChange.SLOT.SECOND_DRIVER);
+				
+				if (activityChangeInfo.getC().equals("solitario"))
+					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.SOLO);
+				else if (activityChangeInfo.getC().equals("en equipo"))
+					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.TEAM);
+				else if (activityChangeInfo.getC().equals("indeterminado"))
+					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.INDETERMINATE);
+				else if (activityChangeInfo.getC().equals("entrada manual"))
+					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.DETERMIDED);
+				
+				if (activityChangeInfo.getP().equals("insertada"))
+					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.INSERTED);
+				else if (activityChangeInfo.getP().equals("no insertada"))
+					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.NOT_INSERTED);
+				
+				if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
-				else if (activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
-				else if (activityChangeInfo.getAa().equals("TRABAJO"))
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("TRABAJO"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
-				else if (activityChangeInfo.getAa().equals("CONDUCCIÓN"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);
-				else if (activityChangeInfo.getAa().equals("?"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);				
-				else
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN"))
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);									
+				else {
+					if (activityChangeInfo.getP().equals("entrada manual"))
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);
+					else
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
+				}
 				
 				// set time value
 				String timeTacho = activityChangeInfo.getT();

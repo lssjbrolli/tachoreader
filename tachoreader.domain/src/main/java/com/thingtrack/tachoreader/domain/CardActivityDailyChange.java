@@ -25,7 +25,19 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
-		
+	
+	@Column(name="SLOT", nullable=false)
+	@Enumerated(EnumType.STRING)
+	private SLOT slot;
+	
+	@Column(name="DRIVING_SYSTEM", nullable=false)
+	@Enumerated(EnumType.STRING)
+	private DRIVING_SYSTEM drivingSystem;
+
+	@Column(name="CARD_STATUS", nullable=false)
+	@Enumerated(EnumType.STRING)
+	private CARD_STATUS cardStatus;
+	
 	@Column(name="TYPE", nullable=false)
 	@Enumerated(EnumType.STRING)
 	private TYPE type;
@@ -37,6 +49,23 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="CARD_ACTIVITY_DAILY_ID", nullable=false)
 	private CardActivityDaily cardActivityDaily;
+	
+	public enum SLOT {
+		FIRST_DRIVER,
+		SECOND_DRIVER
+	}
+	
+	public enum DRIVING_SYSTEM {
+		SOLO,
+		TEAM,
+		INDETERMINATE,
+		DETERMIDED
+	}
+
+	public enum CARD_STATUS {
+		INSERTED,
+		NOT_INSERTED
+	}
 	
 	public enum TYPE {
 		AVAILABLE,
@@ -55,6 +84,30 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 		this.id = id;
 	}
 
+	public SLOT getSlot() {
+		return slot;
+	}
+
+	public void setSlot(SLOT slot) {
+		this.slot = slot;
+	}
+
+	public DRIVING_SYSTEM getDrivingSystem() {
+		return drivingSystem;
+	}
+
+	public void setDrivingSystem(DRIVING_SYSTEM drivingSystem) {
+		this.drivingSystem = drivingSystem;
+	}
+
+	public CARD_STATUS getCardStatus() {
+		return cardStatus;
+	}
+
+	public void setCardStatus(CARD_STATUS cardStatus) {
+		this.cardStatus = cardStatus;
+	} 
+	
 	public TYPE getType() {
 		return type;
 	}
@@ -128,5 +181,5 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 		return "CardActivityDailyChange [id=" + id + ", type=" + type
 				+ ", recordDate=" + recordDate + ", cardActivityDaily="
 				+ cardActivityDaily + "]";
-	} 
+	}
 }

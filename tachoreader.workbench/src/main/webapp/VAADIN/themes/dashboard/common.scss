@@ -375,4 +375,28 @@
 	.condition-link {
 		text-decoration: none;
 	}
+
+	.v-slot-activity_available {
+		background-color: #000000
+	}
+
+	.v-slot-activity_driving {
+		background-color: #00CC00
+	}
+
+	.v-slot-activity_working {
+		background-color: #FFFF00
+	}
+
+	.v-slot-activity_shortbreack {
+		background-color: #FF9933
+	}
+
+	.v-slot-activity_rest {
+		background-color: #FF0000
+	}
+						
+	.v-slot-activity_unknown {
+		background-color: #B266FF
+	}
 }
