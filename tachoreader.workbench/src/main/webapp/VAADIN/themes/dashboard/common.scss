@@ -404,5 +404,13 @@
 	.v-panel-caption-color1 {
     	@include valo-panel-caption-style($background-color: $color1);
     }
+    
+    .v-label-detail-chart-tittle {
+    	color:#44698B;
+	  	fill:#44698B;
+	  	font-family:Arial;
+	  	font-size:16px;
+	  	font-weight:bold;
+    }
   }
 }

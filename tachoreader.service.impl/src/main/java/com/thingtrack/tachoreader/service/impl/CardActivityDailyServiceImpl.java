@@ -33,8 +33,8 @@ public class CardActivityDailyServiceImpl implements CardActivityDailyService {
 	}
 	
 	@Override
-	public Map<TYPE, Float> getCardActivityDailyGraphByDriver(Driver driver, Date dailyDate) throws Exception {
-		return this.cardActivityDailyDao.getCardActivityDailyGraphByDriver(driver, dailyDate);
+	public Map<TYPE, Float> getCardActivityDailyResumeByDriver(Driver driver, Date dailyDate) throws Exception {
+		return this.cardActivityDailyDao.getCardActivityDailyResumeByDriver(driver, dailyDate);
 	}
 	
 	@Override

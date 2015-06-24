@@ -49,7 +49,7 @@ public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer>
 	}
 	
 	@Override
-	public Map<TYPE, Float> getCardActivityDailyGraphByDriver(Driver driver, Date dailyDate) throws Exception {
+	public Map<TYPE, Float> getCardActivityDailyResumeByDriver(Driver driver, Date dailyDate) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		queryString.append(" WHERE p.driver = :driver");
 		queryString.append(" AND p.dailyDate = :dailyDate");
@@ -97,7 +97,7 @@ public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer>
         	
         	float width = Float.valueOf(diffHours) + Float.valueOf(diffMinutes)/60;  
         	
-        	// round two decimals
+        	// round two decimals the activity time
         	float val = Math.round((cardActivityDailyChangeGraphs.get(cardActivityDailyChanges.get(i).getType()) + width) * 100) / 100.0f;
         	
         	cardActivityDailyChangeGraphs.put(cardActivityDailyChanges.get(i).getType(), val); 

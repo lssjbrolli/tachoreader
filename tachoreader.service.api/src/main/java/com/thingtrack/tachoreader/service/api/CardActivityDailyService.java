@@ -13,6 +13,6 @@ import com.thingtrack.tachoreader.domain.CardActivityDailyChange.TYPE;
 public interface CardActivityDailyService {
     public List<CardActivityDaily> getAll(Organization organization) throws Exception;
     public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date registerDate) throws Exception;
-    public Map<TYPE, Float> getCardActivityDailyGraphByDriver(Driver driver, Date dailyDate) throws Exception;
+    public Map<TYPE, Float> getCardActivityDailyResumeByDriver(Driver driver, Date dailyDate) throws Exception;
 	public CardActivityDaily createNewEntity(User user);
 }
