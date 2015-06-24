@@ -136,17 +136,17 @@ public class DriverActivityDailyChart extends CustomComponent {
 					 
 					 String style=null;
 					 if (type.equals(CardActivityDailyChange.TYPE.UNKNOWN))
-						 style = "background: #B266FF"; // PURPLE;
+						 style = "background: " + CardActivityDailyChange.UNKNOWN_HEX_COLOR; // PURPLE;
 		             else if (type.equals(CardActivityDailyChange.TYPE.BREAK_REST))
-		            	 style = "background: #FF0000"; // RED		            	 
+		            	 style = "background: " + CardActivityDailyChange.BREAK_REST_HEX_COLOR; // RED		            	 
 		             else if (type.equals(CardActivityDailyChange.TYPE.SHORT_BREAK))
-		            	 style = "background: #FF9933"; // ORANGE
+		            	 style = "background: " + CardActivityDailyChange.SHORT_BREAK_HEX_COLOR; // ORANGE
 		             else if (type.equals(CardActivityDailyChange.TYPE.AVAILABLE))
-		            	 style = "background: #000000"; // BLACK
+		            	 style = "background: " + CardActivityDailyChange.AVAILABLE_HEX_COLOR; // BLACK
 		             else if (type.equals(CardActivityDailyChange.TYPE.WORKING))
-		            	 style = "background: #FFFF00"; // YELLOW					 
+		            	 style = "background: " + CardActivityDailyChange.WORKING_HEX_COLOR; // YELLOW					 
 		             else if (type.equals(CardActivityDailyChange.TYPE.DRIVING))
-		            	 style = "background: #00CC00"; // GREEN					 
+		            	 style = "background: " + CardActivityDailyChange.DRIVING_HEX_COLOR; // GREEN					 
 					 
 					 // Color the boxes with random colors					 
 					 return style;

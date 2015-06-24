@@ -98,9 +98,7 @@ public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer>
         	float width = Float.valueOf(diffHours) + Float.valueOf(diffMinutes)/60;  
         	
         	// round two decimals
-        	float val = Math.round(cardActivityDailyChangeGraphs.get(cardActivityDailyChanges.get(i).getType()) + width) * 100;
-        	Math.round(val);
-        	val = val / 100;
+        	float val = Math.round((cardActivityDailyChangeGraphs.get(cardActivityDailyChanges.get(i).getType()) + width) * 100) / 100.0f;
         	
         	cardActivityDailyChangeGraphs.put(cardActivityDailyChanges.get(i).getType(), val); 
 		}

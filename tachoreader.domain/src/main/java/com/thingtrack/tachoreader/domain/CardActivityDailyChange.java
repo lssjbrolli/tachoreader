@@ -49,6 +49,13 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="CARD_ACTIVITY_DAILY_ID", nullable=false)
 	private CardActivityDaily cardActivityDaily;
+		
+	public final static String AVAILABLE_HEX_COLOR = "#000000";
+	public final static String DRIVING_HEX_COLOR = "#00CC00";
+	public final static String WORKING_HEX_COLOR = "#FFFF00";
+	public final static String SHORT_BREAK_HEX_COLOR = "#FF9933";
+	public final static String BREAK_REST_HEX_COLOR = "#FF0000";
+	public final static String UNKNOWN_HEX_COLOR = "#B266FF";
 	
 	public enum SLOT {
 		FIRST_DRIVER,
@@ -75,7 +82,7 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 	    BREAK_REST,
 	    UNKNOWN
 	}
-	
+		
 	public Integer getId() {
 		return id;
 	}

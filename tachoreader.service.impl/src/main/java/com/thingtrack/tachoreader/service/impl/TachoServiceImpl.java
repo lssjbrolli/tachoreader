@@ -138,13 +138,13 @@ public class TachoServiceImpl implements TachoService {
 				else if (activityChangeInfo.getP().equals("no insertada"))
 					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.NOT_INSERTED);
 				
-				if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
+				if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
+				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("TRABAJO"))
+				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("TRABAJO"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN"))
+				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN"))
 					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);									
 				else {
 					if (activityChangeInfo.getP().equals("entrada manual"))

@@ -70,10 +70,15 @@ public class GraphView extends AbstractI18NView implements View, ClickDriverActi
 
 	@Override
 	public void queryDriveActivityClick(ClickQueryEvent event) {						
-		try {	   								
+		try {
+			// remove all driver activity cards
+			graphLayout.removeAllComponents();
+			
+			// paint driver activity card
 			DriverActivityDailyCard driverActivityDailyCard = new DriverActivityDailyCard();
 			driverActivityDailyCard.paintCard(event.getDriver(), event.getRegisterDate());
 			
+			// add driver activity card
 			graphLayout.addComponent(driverActivityDailyCard);
 		} catch (Exception e) {
 			// DO NOTHING
