@@ -9,8 +9,8 @@ import java.util.Map;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange.TYPE;
+import com.thingtrack.tachoreader.domain.CardActivityChange;
+import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
@@ -166,18 +166,18 @@ public class DriverActivityDailyCard extends CustomComponent {
         	Float value = entry.getValue();        	
         	
         	SolidColor color = null;
-        	if (type.equals(CardActivityDailyChange.TYPE.UNKNOWN))
-        		color = new SolidColor(CardActivityDailyChange.UNKNOWN_HEX_COLOR); // PURPLE;
-            else if (type.equals(CardActivityDailyChange.TYPE.BREAK_REST))
-            	color = new SolidColor(CardActivityDailyChange.BREAK_REST_HEX_COLOR); // RED	            	 
-            else if (type.equals(CardActivityDailyChange.TYPE.SHORT_BREAK))
-            	color = new SolidColor(CardActivityDailyChange.SHORT_BREAK_HEX_COLOR); // ORANGE
-            else if (type.equals(CardActivityDailyChange.TYPE.AVAILABLE))
-            	color = new SolidColor(CardActivityDailyChange.AVAILABLE_HEX_COLOR); // BLACK
-            else if (type.equals(CardActivityDailyChange.TYPE.WORKING))
-            	color = new SolidColor(CardActivityDailyChange.WORKING_HEX_COLOR); // YELLOW					 
-            else if (type.equals(CardActivityDailyChange.TYPE.DRIVING))
-            	color = new SolidColor(CardActivityDailyChange.DRIVING_HEX_COLOR); // GREEN
+        	if (type.equals(CardActivityChange.TYPE.UNKNOWN))
+        		color = new SolidColor(CardActivityChange.UNKNOWN_HEX_COLOR); // PURPLE;
+            else if (type.equals(CardActivityChange.TYPE.BREAK_REST))
+            	color = new SolidColor(CardActivityChange.BREAK_REST_HEX_COLOR); // RED	            	 
+            else if (type.equals(CardActivityChange.TYPE.SHORT_BREAK))
+            	color = new SolidColor(CardActivityChange.SHORT_BREAK_HEX_COLOR); // ORANGE
+            else if (type.equals(CardActivityChange.TYPE.AVAILABLE))
+            	color = new SolidColor(CardActivityChange.AVAILABLE_HEX_COLOR); // BLACK
+            else if (type.equals(CardActivityChange.TYPE.WORKING))
+            	color = new SolidColor(CardActivityChange.WORKING_HEX_COLOR); // YELLOW					 
+            else if (type.equals(CardActivityChange.TYPE.DRIVING))
+            	color = new SolidColor(CardActivityChange.DRIVING_HEX_COLOR); // GREEN
         	        	
         	series.add(new DataSeriesItem(type.name(), value, color));
         }
@@ -205,11 +205,12 @@ public class DriverActivityDailyCard extends CustomComponent {
 
 		// set detail Data
 		lblKilometers.setValue("Kilometers: " + cardActivityDaily.getDistance() + "Km");
-		lblVehicle.setValue("Vehicle Registration: " + cardActivityDaily.getVehicle().getRegistration());
+		//lblVehicle.setValue("Vehicle Registration: " + cardActivityDaily.getVehicle().getRegistration()); //TODO
+		lblVehicle.setValue("Vehicle Registration: "); //TODO
 		
 		tachos = new ArrayList<Tacho>();
-		cardActivityDaily.getTacho().setSelected(true);
-		tachos.add(cardActivityDaily.getTacho());
+		//cardActivityDaily.getTacho().setSelected(true); //TODO
+		//tachos.add(cardActivityDaily.getTacho()); //TODO
 		
 		// set detail Graph
 		detailDriverActivityDailyChart.clearGraph();

@@ -10,7 +10,7 @@ import com.thingtrack.tachoreader.dao.api.OrganizationDao;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.User;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange.TYPE;
+import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
 
 public class CardActivityDailyServiceImpl implements CardActivityDailyService {

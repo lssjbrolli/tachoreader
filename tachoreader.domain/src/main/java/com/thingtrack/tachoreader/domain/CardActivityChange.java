@@ -18,8 +18,8 @@ import javax.persistence.TemporalType;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="CARD_ACTIVITY_DAILY_CHANGE")
-public class CardActivityDailyChange extends Audit implements Serializable {
+@Table(name="CARD_ACTIVITY_CHANGE")
+public class CardActivityChange extends Audit implements Serializable {
 
 	@Id
 	@Column(name="ID")
@@ -160,9 +160,9 @@ public class CardActivityDailyChange extends Audit implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof CardActivityDailyChange))
+		if (!(obj instanceof CardActivityChange))
 			return false;
-		CardActivityDailyChange other = (CardActivityDailyChange) obj;
+		CardActivityChange other = (CardActivityChange) obj;
 		if (cardActivityDaily == null) {
 			if (other.cardActivityDaily != null)
 				return false;

@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tacografo.file.FileBlockTGD;
 import org.tacografo.file.cardblockdriver.CardDriverActivity;
@@ -32,13 +33,12 @@ import com.thingtrack.tachoreader.dao.api.DriverDao;
 import com.thingtrack.tachoreader.dao.api.TachoDao;
 import com.thingtrack.tachoreader.dao.api.UserDao;
 import com.thingtrack.tachoreader.dao.api.VehicleDao;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange;
+import com.thingtrack.tachoreader.domain.CardActivityChange;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
-import com.thingtrack.tachoreader.domain.Vehicle;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 
@@ -56,7 +56,7 @@ public class TachoServiceImpl implements TachoService {
 	private TachoDao tachoDao;
 
 	@Autowired
-	private CardActivityDailyDao driverActivityDao;
+	private CardActivityDailyDao cardActivityDailyDao;
 	
 	@Autowired
 	private CardActivityDailyService cardActivityDailyService;
@@ -104,110 +104,107 @@ public class TachoServiceImpl implements TachoService {
 		this.tachoDao.delete(tacho);	
 	}
 	
-	private CardVehicleRecord getVehicle(CardVehiclesUsed cardVehiclesUsed, Date registerDate) {
-		for (CardVehicleRecord cardVehicleRecord : cardVehiclesUsed.getCardVehicleRecords()) {
-			if (cardVehicleRecord.getVehicleFirstUse().equals(registerDate))
-				return cardVehicleRecord;
+	private CardActivityDaily registerDriverActivity(User user, Driver driver, Tacho tacho, CardActivityDailyRecord cardActivityDailyRecord, CardVehiclesUsed cardVehiclesUsed) throws ExceptionVehicleNotExist {
+		Calendar cal = Calendar.getInstance();
+					
+		CardActivityDaily cardActivityDaily = cardActivityDailyService.createNewEntity(user);
+		
+		cardActivityDaily.setDriver(driver);
+		cardActivityDaily.addTachos(tacho);
+		cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());			
+		cardActivityDaily.setDailyDate(cardActivityDailyRecord.getActivityRecordDate());
+		
+		// set vehicles used in this daily activity		
+		for (CardVehicleRecord cardVehicleRecord : cardVehiclesUsed.getCardVehicleRecords()) {			
+			if (DateUtils.isSameDay(cardVehicleRecord.getVehicleFirstUse(), cardActivityDailyRecord.getActivityRecordDate())) {
+				try {
+					cardActivityDaily.addVehicle(vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber()));
+				} catch (Exception ex) {		
+					throw new ExceptionVehicleNotExist(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
+				}
+			}				
 		}
 		
-		return null;
-	}
-	
-	private List<CardActivityDaily> registerDriverActivity(User user, Driver driver, Vehicle vehicle, Tacho tacho, ArrayList<CardActivityDailyRecord> cardActivityDailyRecords) {
-		List<CardActivityDaily> cardActivityDailys = new ArrayList<CardActivityDaily>();
-		Calendar cal = Calendar.getInstance();
-		
-		for (CardActivityDailyRecord cardActivityDailyRecord : cardActivityDailyRecords) {			
-			CardActivityDaily cardActivityDaily = cardActivityDailyService.createNewEntity(user);
+		// generate daily change activity
+		for (int i = 0; i < cardActivityDailyRecord.getActivityChangeInfo().size(); i++) {
+			ActivityChangeInfo activityChangeInfo = cardActivityDailyRecord.getActivityChangeInfo().get(i);
 			
-			cardActivityDaily.setDriver(driver);
-			cardActivityDaily.setVehicle(vehicle);
-			cardActivityDaily.setTacho(tacho);
-			cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());			
-			cardActivityDaily.setDailyDate(cardActivityDailyRecord.getActivityRecordDate());
+			CardActivityChange cardActivityDailyChange = new CardActivityChange();
 			
-			for (int i = 0; i < cardActivityDailyRecord.getActivityChangeInfo().size(); i++) {
-				ActivityChangeInfo activityChangeInfo = cardActivityDailyRecord.getActivityChangeInfo().get(i);
-				
-				CardActivityDailyChange cardActivityDailyChange = new CardActivityDailyChange();
-				
-				if (activityChangeInfo.getS().equals("conductor"))
-					cardActivityDailyChange.setSlot(CardActivityDailyChange.SLOT.FIRST_DRIVER);
-				else if (activityChangeInfo.getS().equals("segundo conductor"))
-					cardActivityDailyChange.setSlot(CardActivityDailyChange.SLOT.SECOND_DRIVER);
-				
-				if (activityChangeInfo.getC().equals("solitario"))
-					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.SOLO);
-				else if (activityChangeInfo.getC().equals("en equipo"))
-					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.TEAM);
-				else if (activityChangeInfo.getC().equals("indeterminado"))
-					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.INDETERMINATE);
-				else if (activityChangeInfo.getC().equals("entrada manual"))
-					cardActivityDailyChange.setDrivingSystem(CardActivityDailyChange.DRIVING_SYSTEM.DETERMIDED);
-				
-				if (activityChangeInfo.getP().equals("insertada"))
-					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.INSERTED);
-				else if (activityChangeInfo.getP().equals("no insertada"))
-					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.NOT_INSERTED);
-				
-				if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO")) {
-					if (i < cardActivityDailyRecord.getActivityChangeInfo().size()-1) {								
-						String[] startTime = cardActivityDailyRecord.getActivityChangeInfo().get(i).getT().split(":");
-						String[] endTime = cardActivityDailyRecord.getActivityChangeInfo().get(i+1).getT().split(":"); 
+			if (activityChangeInfo.getS().equals("conductor"))
+				cardActivityDailyChange.setSlot(CardActivityChange.SLOT.FIRST_DRIVER);
+			else if (activityChangeInfo.getS().equals("segundo conductor"))
+				cardActivityDailyChange.setSlot(CardActivityChange.SLOT.SECOND_DRIVER);
+			
+			if (activityChangeInfo.getC().equals("solitario"))
+				cardActivityDailyChange.setDrivingSystem(CardActivityChange.DRIVING_SYSTEM.SOLO);
+			else if (activityChangeInfo.getC().equals("en equipo"))
+				cardActivityDailyChange.setDrivingSystem(CardActivityChange.DRIVING_SYSTEM.TEAM);
+			else if (activityChangeInfo.getC().equals("indeterminado"))
+				cardActivityDailyChange.setDrivingSystem(CardActivityChange.DRIVING_SYSTEM.INDETERMINATE);
+			else if (activityChangeInfo.getC().equals("entrada manual"))
+				cardActivityDailyChange.setDrivingSystem(CardActivityChange.DRIVING_SYSTEM.DETERMIDED);
+			
+			if (activityChangeInfo.getP().equals("insertada"))
+				cardActivityDailyChange.setCardStatus(CardActivityChange.CARD_STATUS.INSERTED);
+			else if (activityChangeInfo.getP().equals("no insertada"))
+				cardActivityDailyChange.setCardStatus(CardActivityChange.CARD_STATUS.NOT_INSERTED);
+			
+			if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO")) {
+				if (i < cardActivityDailyRecord.getActivityChangeInfo().size()-1) {								
+					String[] startTime = cardActivityDailyRecord.getActivityChangeInfo().get(i).getT().split(":");
+					String[] endTime = cardActivityDailyRecord.getActivityChangeInfo().get(i+1).getT().split(":"); 
 
-						int interval = (Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0])) * 60 + Integer.parseInt(endTime[1]) - Integer.parseInt(startTime[1]);
-						
-						if (interval < 15)
-							cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);
-						else
-							cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
-					}
+					int interval = (Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0])) * 60 + Integer.parseInt(endTime[1]) - Integer.parseInt(startTime[1]);
+					
+					if (interval < 15)
+						cardActivityDailyChange.setType(CardActivityChange.TYPE.SHORT_BREAK);
 					else
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);					
-				}
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD")) {
-					if (!activityChangeInfo.getC().equals("indeterminado"))
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
-					else
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
-				}
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("TRABAJO")) {
-					if (!activityChangeInfo.getC().equals("indeterminado"))
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
-					else
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
-				}
-				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN")) {
-					if (!activityChangeInfo.getC().equals("indeterminado"))
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);
-					else
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
+						cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);
 				}
 				else
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);				
-				
-				// set time value
-				String timeTacho = activityChangeInfo.getT();
-				String[] timeSplit = timeTacho.split(":");
-				
-				cal.setTime(cardActivityDailyRecord.getActivityRecordDate());
-				cal.set(Calendar.HOUR_OF_DAY, 0);
-			    cal.set(Calendar.MINUTE, 0);
-			    cal.set(Calendar.SECOND, 0);
-			    cal.set(Calendar.MILLISECOND, 0);
-				cal.add(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
-				cal.add(Calendar.MINUTE, Integer.parseInt(timeSplit[1]));
-				cardActivityDailyChange.setRecordDate(cal.getTime());
-				
-				cardActivityDaily.addCardActivityDailyChange(cardActivityDailyChange);
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);					
 			}
+			else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD")) {
+				if (!activityChangeInfo.getC().equals("indeterminado"))
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.AVAILABLE);
+				else
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);
+			}
+			else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("TRABAJO")) {
+				if (!activityChangeInfo.getC().equals("indeterminado"))
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.WORKING);
+				else
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);
+			}
+			else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN")) {
+				if (!activityChangeInfo.getC().equals("indeterminado"))
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.DRIVING);
+				else
+					cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);
+			}
+			else
+				cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);				
 			
-			cardActivityDailys.add(cardActivityDaily);
+			// set time value
+			String timeTacho = activityChangeInfo.getT();
+			String[] timeSplit = timeTacho.split(":");
+			
+			cal.setTime(cardActivityDailyRecord.getActivityRecordDate());
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+		    cal.set(Calendar.MINUTE, 0);
+		    cal.set(Calendar.SECOND, 0);
+		    cal.set(Calendar.MILLISECOND, 0);
+			cal.add(Calendar.HOUR, Integer.parseInt(timeSplit[0]));
+			cal.add(Calendar.MINUTE, Integer.parseInt(timeSplit[1]));
+			cardActivityDailyChange.setRecordDate(cal.getTime());
+			
+			cardActivityDaily.addCardActivityDailyChange(cardActivityDailyChange);
 		}
 		
-		return cardActivityDailys;
+		return cardActivityDaily;
 	}
-	
+		
 	@Override
 	public List<Tacho> setRegisterTacho(User user, String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {				
 		List<Tacho> tachos = new ArrayList<Tacho>();		
@@ -241,10 +238,7 @@ public class TachoServiceImpl implements TachoService {
 			Date tachoCardExpiryDate = cardBlockIdentification.getCardExpiryDate();
 			SimpleDateFormat formatterDriverBithDate = new SimpleDateFormat("yyyy-MM-dd");
 			Date tachoDriverBithDate = formatterDriverBithDate.parse(cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderBirthDate());
-			
-			// parse vehicle data
-			CardVehicleRecord cardVehicleRecord = cardVehiclesUsed.getCardVehicleRecords().get(cardVehiclesUsed.getVehiclePointerNewestRecord()-1);
-			
+						
 			// STEP03: get driver from user or from card (the tachos could be register from drivers or from administrators)
 			Driver tachoDriver = null;
 			if (tachoUser.getAgent() instanceof Driver) {
@@ -283,15 +277,7 @@ public class TachoServiceImpl implements TachoService {
 			}
 			catch (Exception ex) {								
 			}
-			
-			// get vehicle from tacho
-			Vehicle tachoVehicle = null;
-			try {
-				tachoVehicle = vehicleDao.getByRegistration(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
-			} catch (Exception ex) {		
-				throw new ExceptionVehicleNotExist(cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber());
-			}
-			
+							
 			// STEP04: copy tacho file to the tachos organization repository			
 			FileUtils.copyFile(tachoFile, FileUtils.getFile(tachoRepository + "/" + tachoUser.getOrganizationDefault().getId(), fileName));			
 			
@@ -299,28 +285,26 @@ public class TachoServiceImpl implements TachoService {
 			Tacho tacho = null;
 			try {						
 				tacho = new Tacho();				
-				tacho.setDriver(tachoDriver);
-				tacho.setVehicle(tachoVehicle); // get the last vehicle used
-				tacho.setFile(fileName);							
+				tacho.setFile(fileName);
+				tacho.setType(Tacho.TYPE.DRIVER);
 				tacho.setCreatedBy(tachoUser);	
 				tacho.setCreationDate(new Date());
 				
-				tachos.add(save(tacho)); //TODO: how are registered the vehicles used in the driver card??
+				// configure activity daily for this tacho
+				for (CardActivityDailyRecord cardActivityDailyRecord : cardDriverActivity.getActivityDailyRecords()) {
+					try {
+						tacho.addCardActivityDaily(cardActivityDailyDao.getCardActivityDailyByDriver(tachoDriver, cardActivityDailyRecord.getActivityRecordDate()));
+					}
+					catch(Exception ex) {		
+						tacho.addCardActivityDaily(registerDriverActivity(user, tachoDriver, tacho, cardActivityDailyRecord, cardVehiclesUsed));						
+					}
+				}
+				
+				tachos.add(save(tacho));
 			}
 			catch (Exception ex) {
-				throw new Exception("The vehicle " + cardVehicleRecord.getVehicleRegistration().getVehicleRegistrationNumber() + " is not registered", ex);					
-			}
-			
-			//STEP06: register driver activity
-			try {
-				List<CardActivityDaily> cardActivityDailys = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, cardDriverActivity.getActivityDailyRecords());
-				
-				for (CardActivityDaily cardActivityDaily : cardActivityDailys)
-					driverActivityDao.save(cardActivityDaily);								
-				
-			} catch (Exception ex) {
-				throw new Exception("Error insert driver activity", ex);					
-			}			
+				throw new Exception("Error registering Tacho", ex);					
+			}		
 		} catch (ErrorFile e) {
 			throw new Exception("Error uploading the tacho", e);
 		} catch (IOException e) {			

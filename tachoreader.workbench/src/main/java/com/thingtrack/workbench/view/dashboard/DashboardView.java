@@ -211,14 +211,16 @@ public final class DashboardView extends Panel implements View {
         	notificationLayout = new VerticalLayout();
             notificationLayout.addStyleName("notification-item");
 
-            Label titleLabel = new Label(notification.getDriver().getName());
+            //Label titleLabel = new Label(notification.getDriver().getName()); //TODO
+            Label titleLabel = new Label(""); //TODO
             titleLabel.addStyleName("notification-title");
 
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Label timeLabel = new Label(df.format(notification.getCreationDate()));
             timeLabel.addStyleName("notification-time");
 
-            Label contentLabel = new Label(notification.getVehicle().getRegistration());
+            // Label contentLabel = new Label(notification.getVehicle().getRegistration());
+            Label contentLabel = new Label(""); //TODO
             contentLabel.addStyleName("notification-content");
 
             notificationLayout.addComponents(titleLabel, timeLabel, contentLabel);
@@ -307,11 +309,11 @@ public final class DashboardView extends Panel implements View {
 
         @Subscribe
         public void updateNotificationsTacho(final TachoFileEvent event) {
-        	// only get tacho events from my organization
-        	if (event.getTacho().getDriver().getOrganization().getId() == WorkbenchUI.getCurrent().getUser().getOrganizationDefault().getId()) {
+        	// only get tacho events from my organization //TODO
+        	/*if (event.getTacho().getDriver().getOrganization().getId() == WorkbenchUI.getCurrent().getUser().getOrganizationDefault().getId()) {
         		WorkbenchUI.getCurrent().getNotifications().add(event.getTacho());
         		setUnreadCount(WorkbenchUI.getCurrent().getNotifications().size());	        	
-        	}
+        	}*/
         }
         
         public void setUnreadCount(final int count) {

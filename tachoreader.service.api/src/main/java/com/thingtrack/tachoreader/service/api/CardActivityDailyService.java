@@ -6,7 +6,7 @@ import java.util.Map;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.User;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange.TYPE;
+import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
 
 public interface CardActivityDailyService {
     public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date registerDate) throws Exception;

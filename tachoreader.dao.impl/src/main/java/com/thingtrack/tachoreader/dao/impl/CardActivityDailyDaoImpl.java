@@ -12,29 +12,14 @@ import javax.persistence.TemporalType;
 import com.thingtrack.konekti.dao.template.JpaDao;
 import com.thingtrack.tachoreader.dao.api.CardActivityDailyDao;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange;
-import com.thingtrack.tachoreader.domain.CardActivityDailyChange.TYPE;
+import com.thingtrack.tachoreader.domain.CardActivityChange;
+import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
 import com.thingtrack.tachoreader.domain.Driver;
 
-public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<CardActivityDaily> getAll(Driver driver, Date dailyDate) throws Exception {
-		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
-		queryString.append(" WHERE p.driver = :driver");
-		queryString.append(" AND p.dailyDate = :dailyDate");
-		
-		Query query = (Query) getEntityManager().createQuery(queryString.toString());
-		
-		query.setParameter("driver", driver);
-		query.setParameter("dailyDate", dailyDate, TemporalType.DATE);
-		
-		return query.getResultList();
-	}
-	
+public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {		
 	@Override
 	public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date dailyDate) throws Exception {
-		StringBuffer queryString = new StringBuffer("SELECT DISTINCT p FROM " + getEntityName() + " p");
+		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		queryString.append(" WHERE p.driver = :driver");
 		queryString.append(" AND p.dailyDate = :dailyDate");
 		
@@ -58,15 +43,15 @@ public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer>
 		query.setParameter("dailyDate", dailyDate, TemporalType.DATE);
 		
 		CardActivityDaily cardActivityDaily = (CardActivityDaily) query.getSingleResult();
-		List<CardActivityDailyChange> cardActivityDailyChanges = cardActivityDaily.getCardActivityDailyChanges();
+		List<CardActivityChange> cardActivityDailyChanges = cardActivityDaily.getCardActivityDailyChanges();
 				
 		Map<TYPE, Float> cardActivityDailyChangeGraphs = new HashMap<TYPE, Float>();
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.AVAILABLE, 0.0f);
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.BREAK_REST, 0.0f);
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.DRIVING, 0.0f);
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.SHORT_BREAK, 0.0f);
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.UNKNOWN, 0.0f);
-		cardActivityDailyChangeGraphs.put(CardActivityDailyChange.TYPE.WORKING, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.AVAILABLE, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.BREAK_REST, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.DRIVING, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.SHORT_BREAK, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.UNKNOWN, 0.0f);
+		cardActivityDailyChangeGraphs.put(CardActivityChange.TYPE.WORKING, 0.0f);
 		
 		Calendar calendar = Calendar.getInstance();
 		for (int i = 0; i < cardActivityDailyChanges.size(); i++) {
