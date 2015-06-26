@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tacografo.file.FileBlockTGD;
+import org.tacografo.file.cardblockdriver.CardDriverActivity;
 import org.tacografo.file.cardblockdriver.CardIdentification;
 import org.tacografo.file.cardblockdriver.CardVehiclesUsed;
 import org.tacografo.file.cardblockdriver.subblock.ActivityChangeInfo;
@@ -103,11 +104,20 @@ public class TachoServiceImpl implements TachoService {
 		this.tachoDao.delete(tacho);	
 	}
 	
+	private CardVehicleRecord getVehicle(CardVehiclesUsed cardVehiclesUsed, Date registerDate) {
+		for (CardVehicleRecord cardVehicleRecord : cardVehiclesUsed.getCardVehicleRecords()) {
+			if (cardVehicleRecord.getVehicleFirstUse().equals(registerDate))
+				return cardVehicleRecord;
+		}
+		
+		return null;
+	}
+	
 	private List<CardActivityDaily> registerDriverActivity(User user, Driver driver, Vehicle vehicle, Tacho tacho, ArrayList<CardActivityDailyRecord> cardActivityDailyRecords) {
 		List<CardActivityDaily> cardActivityDailys = new ArrayList<CardActivityDaily>();
 		Calendar cal = Calendar.getInstance();
 		
-		for (CardActivityDailyRecord cardActivityDailyRecord : cardActivityDailyRecords) {
+		for (CardActivityDailyRecord cardActivityDailyRecord : cardActivityDailyRecords) {			
 			CardActivityDaily cardActivityDaily = cardActivityDailyService.createNewEntity(user);
 			
 			cardActivityDaily.setDriver(driver);
@@ -116,7 +126,9 @@ public class TachoServiceImpl implements TachoService {
 			cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());			
 			cardActivityDaily.setDailyDate(cardActivityDailyRecord.getActivityRecordDate());
 			
-			for (ActivityChangeInfo activityChangeInfo : cardActivityDailyRecord.getActivityChangeInfo()) {
+			for (int i = 0; i < cardActivityDailyRecord.getActivityChangeInfo().size(); i++) {
+				ActivityChangeInfo activityChangeInfo = cardActivityDailyRecord.getActivityChangeInfo().get(i);
+				
 				CardActivityDailyChange cardActivityDailyChange = new CardActivityDailyChange();
 				
 				if (activityChangeInfo.getS().equals("conductor"))
@@ -138,20 +150,41 @@ public class TachoServiceImpl implements TachoService {
 				else if (activityChangeInfo.getP().equals("no insertada"))
 					cardActivityDailyChange.setCardStatus(CardActivityDailyChange.CARD_STATUS.NOT_INSERTED);
 				
-				if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
-				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
-				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("TRABAJO"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
-				else if (activityChangeInfo.getP().equals("insertada") && !activityChangeInfo.getC().equals("no insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN"))
-					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);									
-				else {
-					if (activityChangeInfo.getP().equals("entrada manual"))
-						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);
+				if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("PAUSA/DESCANSO")) {
+					if (i < cardActivityDailyRecord.getActivityChangeInfo().size()-1) {								
+						String[] startTime = cardActivityDailyRecord.getActivityChangeInfo().get(i).getT().split(":");
+						String[] endTime = cardActivityDailyRecord.getActivityChangeInfo().get(i+1).getT().split(":"); 
+
+						int interval = (Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0])) * 60 + Integer.parseInt(endTime[1]) - Integer.parseInt(startTime[1]);
+						
+						if (interval < 15)
+							cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.SHORT_BREAK);
+						else
+							cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);
+					}
+					else
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.BREAK_REST);					
+				}
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD")) {
+					if (!activityChangeInfo.getC().equals("indeterminado"))
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.AVAILABLE);
 					else
 						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
 				}
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("TRABAJO")) {
+					if (!activityChangeInfo.getC().equals("indeterminado"))
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.WORKING);
+					else
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
+				}
+				else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("CONDUCCIÓN")) {
+					if (!activityChangeInfo.getC().equals("indeterminado"))
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.DRIVING);
+					else
+						cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);
+				}
+				else
+					cardActivityDailyChange.setType(CardActivityDailyChange.TYPE.UNKNOWN);				
 				
 				// set time value
 				String timeTacho = activityChangeInfo.getT();
@@ -198,15 +231,18 @@ public class TachoServiceImpl implements TachoService {
 			// STEP02: parse download file and get data	blocks					
 			FileBlockTGD fileBlockTGD = new FileBlockTGD(tachoFile.getPath());
 			
-			CardIdentification cardBlockIdentification = fileBlockTGD.getIdentification();
-			CardVehiclesUsed cardVehiclesUsed = fileBlockTGD.getVehicles_used();			
+			CardIdentification cardBlockIdentification = fileBlockTGD.getIdentification();			
+			CardDriverActivity cardDriverActivity = fileBlockTGD.getDriver_activity_data();
+			CardVehiclesUsed cardVehiclesUsed = fileBlockTGD.getVehicles_used();
 			
+			// parse driver data
 			String tachoHolderName = cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderName().getHolderFirstNames() + " " + cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderName().getHolderSurname();
 			String tachoDriverIdentification = cardBlockIdentification.getCardNumber().toString();
 			Date tachoCardExpiryDate = cardBlockIdentification.getCardExpiryDate();
 			SimpleDateFormat formatterDriverBithDate = new SimpleDateFormat("yyyy-MM-dd");
 			Date tachoDriverBithDate = formatterDriverBithDate.parse(cardBlockIdentification.getDriverCardHolderIdentification().getCardHolderBirthDate());
 			
+			// parse vehicle data
 			CardVehicleRecord cardVehicleRecord = cardVehiclesUsed.getCardVehicleRecords().get(cardVehiclesUsed.getVehiclePointerNewestRecord()-1);
 			
 			// STEP03: get driver from user or from card (the tachos could be register from drivers or from administrators)
@@ -277,7 +313,7 @@ public class TachoServiceImpl implements TachoService {
 			
 			//STEP06: register driver activity
 			try {
-				List<CardActivityDaily> cardActivityDailys = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, fileBlockTGD.getDriver_activity_data().getActivityDailyRecords());
+				List<CardActivityDaily> cardActivityDailys = registerDriverActivity(user, tachoDriver, tachoVehicle, tacho, cardDriverActivity.getActivityDailyRecords());
 				
 				for (CardActivityDaily cardActivityDaily : cardActivityDailys)
 					driverActivityDao.save(cardActivityDaily);								
