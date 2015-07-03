@@ -101,7 +101,7 @@ public class TachoUploadView extends AbstractI18NView implements View {
 		pnHelpUploadTachos.addStyleName("color3");	
 		
 		StringBuffer helpTachosUpload = new StringBuffer("Desde esta pantalla usted podrá enviar a la plataforma los ficheros de tacógrafo y/o tarjeta.<br>");
-		helpTachosUpload.append("Para comenzar pulse el botón \"Añadir...\" y seleccione el/los fichero/os que desea guardar en TachoReader.");
+		helpTachosUpload.append("Para comenzar pulse el botón \"Sube tus Tachos\" y seleccione el/los fichero/os que desea guardar en TachoReader.");
 				
 		lblTachoUploadHelp.setContentMode(ContentMode.HTML);
 		lblTachoUploadHelp.setValue(helpTachosUpload.toString());						
@@ -129,8 +129,7 @@ public class TachoUploadView extends AbstractI18NView implements View {
 		btnSelectTachos.addClickListener(new ClickListener() {			
 			@Override
 			public void buttonClick(ClickEvent event) {
-				tachosUploadList.removeAllItems();
-				
+				tachosUploadList.removeAllItems();				
 			}
 		});		
 		
@@ -218,8 +217,9 @@ public class TachoUploadView extends AbstractI18NView implements View {
 	    	   else {
 	    		   UploadTachoComponent uploadTachoComponent = new UploadTachoComponent(error.getFile().getName(), UploadTachoComponent.MESSAGE_TYPE.ERROR, error.getMessage());
 	    		   
-	    		   ProgressTachoComponent progressTachoComponent = new ProgressTachoComponent();
-	    		   	
+	    		   ProgressTachoComponent progressTachoComponent = new ProgressTachoComponent();	    		   	
+	    		   progressTachoComponent.setTotalTachoSize("0 KB");
+	    		   
 	    		   Button actionTachoComponent = new Button("View Tacho");
 	    		   actionTachoComponent.setEnabled(false);
 	    		   actionTachoComponent.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -249,6 +249,7 @@ public class TachoUploadView extends AbstractI18NView implements View {
 	
 	@Override
     public void enter(ViewChangeEvent event) {
+		tachosUploadList.removeAllItems();
     }
 	
 	@PostConstruct
