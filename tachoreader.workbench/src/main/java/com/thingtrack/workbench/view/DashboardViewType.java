@@ -5,7 +5,8 @@ import com.thingtrack.workbench.view.dashboard.DashboardView;
 import com.thingtrack.workbench.view.drivers.DriverView;
 import com.thingtrack.workbench.view.graph.GraphView;
 import com.thingtrack.workbench.view.reports.ReportsView;
-import com.thingtrack.workbench.view.tacho.TachoView;
+import com.thingtrack.workbench.view.tacho.TachoDownloadView;
+import com.thingtrack.workbench.view.tacho.TachoUploadView;
 import com.thingtrack.workbench.view.vehicle.VehicleView;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
@@ -16,7 +17,8 @@ public enum DashboardViewType {
     ADMINISTRATOR("administrators", AdministratorView.class, FontAwesome.BUILDING_O, false),
     DRIVERS("drivers", DriverView.class, FontAwesome.USERS, false),
     VEHICLES("vehicles", VehicleView.class, FontAwesome.TRUCK, false),
-    TACHOMETERS("tachos", TachoView.class, FontAwesome.TACHOMETER, false),
+    TACHOMETERS_UPLOAD("tachos_upload", TachoUploadView.class, FontAwesome.CLOUD_UPLOAD, false),
+    TACHOMETERS_DOWNLOAD("tachos_download", TachoDownloadView.class, FontAwesome.CLOUD_DOWNLOAD, false),
     GRAPHS("graphs", GraphView.class, FontAwesome.BAR_CHART_O, false),
     REPORTS("reports", ReportsView.class, FontAwesome.FILE_TEXT_O, true);
 

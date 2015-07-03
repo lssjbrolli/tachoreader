@@ -8,12 +8,15 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -34,9 +37,11 @@ public class Tacho extends Audit implements Serializable {
 	@JoinTable(name="TACHO_CARD_ACTIVITY_DAILY",
 			   joinColumns=@JoinColumn(name="TACHO_ID"),
 			   inverseJoinColumns=@JoinColumn(name="CARD_ACTIVITY_DAILY_ID"))
+	@OrderBy("dailyDate ASC")
 	private List<CardActivityDaily> cardsActivityDaily = new ArrayList<CardActivityDaily>();
 	
 	@Column(name="TYPE", nullable=false, length=55)
+	@Enumerated(EnumType.STRING)
 	private TYPE type;
 	
 	@Transient
@@ -45,7 +50,7 @@ public class Tacho extends Audit implements Serializable {
 	public enum TYPE {
 		DRIVER,
 		VEHICLE,
-		ORGANIZATION,
+		COMPANY,
 		TEST_CENTER
 	}
 	

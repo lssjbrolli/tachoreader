@@ -1,7 +1,6 @@
 package com.thingtrack.workbench.view;
 
 import com.google.common.eventbus.Subscribe;
-import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NCustomComponent;
 import com.thingtrack.workbench.component.ProfilePreferencesWindow;
@@ -95,10 +94,6 @@ public final class DashboardMenu extends AbstractI18NCustomComponent {
         return logoWrapper;
     }
 
-    private User getCurrentUser() {
-    	return WorkbenchUI.getCurrent().getUser();
-    }
-
     private Component buildUserMenu() {
         settings = new MenuBar();
         settings.setHtmlContentAllowed(true);
@@ -153,7 +148,31 @@ public final class DashboardMenu extends AbstractI18NCustomComponent {
         menuItemsLayout.addStyleName("valo-menuitems");
         menuItemsLayout.setHeight(100.0f, Unit.PERCENTAGE);
 
-        for (final DashboardViewType view : DashboardViewType.values()) {
+        for (final DashboardViewType view : DashboardViewType.values()) {        	
+    		if (view.getViewName().equals("administrators")) {
+            	Label label = new Label(getI18N().getMessage("com.thingtrack.workbench.view.DashboardMenu.menu.top.list"), ContentMode.HTML);
+                label.setPrimaryStyleName("valo-menu-subtitle");
+                label.addStyleName("h4");
+                label.setSizeUndefined();
+                menuItemsLayout.addComponent(label);
+            }
+        	
+    		if (view.getViewName().equals("tachos_upload")) {
+            	Label label = new Label(getI18N().getMessage("com.thingtrack.workbench.view.DashboardMenu.menu.top.tachos"), ContentMode.HTML);
+                label.setPrimaryStyleName("valo-menu-subtitle");
+                label.addStyleName("h4");
+                label.setSizeUndefined();
+                menuItemsLayout.addComponent(label);
+            }
+        	
+    		if (view.getViewName().equals("graphs")) {
+            	Label label = new Label(getI18N().getMessage("com.thingtrack.workbench.view.DashboardMenu.menu.top.graphlist"), ContentMode.HTML);
+                label.setPrimaryStyleName("valo-menu-subtitle");
+                label.addStyleName("h4");
+                label.setSizeUndefined();
+                menuItemsLayout.addComponent(label);
+            }
+    		
             Component menuItemComponent = new ValoMenuItemButton(view);
 
             if (view == DashboardViewType.REPORTS) {
@@ -237,7 +256,7 @@ public final class DashboardMenu extends AbstractI18NCustomComponent {
         if (event != null)
         	settingsItem.setText(event.getUser().getAgent().getName() + "<BR>[" + event.getUser().getOrganizationDefault().getName() + "]");
         else
-        	settingsItem.setText(getCurrentUser().getAgent().getName() + "<BR>[" + getCurrentUser().getOrganizationDefault().getName() + "]");
+        	settingsItem.setText(WorkbenchUI.getCurrent().getUser().getAgent().getName() + "<BR>[" + WorkbenchUI.getCurrent().getUser().getOrganizationDefault().getName() + "]");
     }
 
     public final class ValoMenuItemButton extends Button {

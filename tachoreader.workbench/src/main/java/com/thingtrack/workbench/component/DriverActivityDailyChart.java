@@ -600,7 +600,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblAvailable.setImmediate(false);
 		lblAvailable.setWidth("-1px");
 		lblAvailable.setHeight("-1px");
-		lblAvailable.setValue("available");
+		lblAvailable.setValue("Available");
 		availableContainerLayout.addComponent(lblAvailable);
 		availableContainerLayout.setExpandRatio(lblAvailable, 1.0f);
 		availableContainerLayout.setComponentAlignment(lblAvailable,
@@ -633,7 +633,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblDriving.setImmediate(false);
 		lblDriving.setWidth("-1px");
 		lblDriving.setHeight("-1px");
-		lblDriving.setValue("driving");
+		lblDriving.setValue("Driving");
 		drivingContainerLayout.addComponent(lblDriving);
 		drivingContainerLayout.setExpandRatio(lblDriving, 1.0f);
 		drivingContainerLayout.setComponentAlignment(lblDriving, new Alignment(
@@ -666,7 +666,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblWorking.setImmediate(false);
 		lblWorking.setWidth("-1px");
 		lblWorking.setHeight("-1px");
-		lblWorking.setValue("working");
+		lblWorking.setValue("Working");
 		workingContainerLayout.addComponent(lblWorking);
 		workingContainerLayout.setExpandRatio(lblWorking, 1.0f);
 		workingContainerLayout.setComponentAlignment(lblWorking, new Alignment(
@@ -699,7 +699,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblShortBrack.setImmediate(false);
 		lblShortBrack.setWidth("-1px");
 		lblShortBrack.setHeight("-1px");
-		lblShortBrack.setValue("short breack");
+		lblShortBrack.setValue("Short breack");
 		shortBreackContainerLayout.addComponent(lblShortBrack);
 		shortBreackContainerLayout.setExpandRatio(lblShortBrack, 1.0f);
 		shortBreackContainerLayout.setComponentAlignment(lblShortBrack,
@@ -732,7 +732,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblRest.setImmediate(false);
 		lblRest.setWidth("-1px");
 		lblRest.setHeight("-1px");
-		lblRest.setValue("breack/rest");
+		lblRest.setValue("Breack/Rest");
 		restContainerLayout.addComponent(lblRest);
 		restContainerLayout.setExpandRatio(lblRest, 1.0f);
 		restContainerLayout.setComponentAlignment(lblRest, new Alignment(33));
@@ -764,7 +764,7 @@ public class DriverActivityDailyChart extends CustomComponent {
 		lblUnkown.setImmediate(false);
 		lblUnkown.setWidth("-1px");
 		lblUnkown.setHeight("-1px");
-		lblUnkown.setValue("unkown");
+		lblUnkown.setValue("Unknown");
 		unknownContainrLayout.addComponent(lblUnkown);
 		unknownContainrLayout.setExpandRatio(lblUnkown, 1.0f);
 		unknownContainrLayout.setComponentAlignment(lblUnkown,

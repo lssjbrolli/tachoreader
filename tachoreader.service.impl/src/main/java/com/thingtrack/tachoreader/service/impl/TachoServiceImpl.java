@@ -130,6 +130,7 @@ public class TachoServiceImpl implements TachoService {
 			ActivityChangeInfo activityChangeInfo = cardActivityDailyRecord.getActivityChangeInfo().get(i);
 			
 			CardActivityChange cardActivityDailyChange = new CardActivityChange();
+			cardActivityDailyChange.setCreatedBy(user);
 			
 			if (activityChangeInfo.getS().equals("conductor"))
 				cardActivityDailyChange.setSlot(CardActivityChange.SLOT.FIRST_DRIVER);
@@ -157,13 +158,23 @@ public class TachoServiceImpl implements TachoService {
 
 					int interval = (Integer.parseInt(endTime[0]) - Integer.parseInt(startTime[0])) * 60 + Integer.parseInt(endTime[1]) - Integer.parseInt(startTime[1]);
 					
-					if (interval < 15)
-						cardActivityDailyChange.setType(CardActivityChange.TYPE.SHORT_BREAK);
+					if (!activityChangeInfo.getC().equals("indeterminado")) {
+						if (interval < 15)
+							cardActivityDailyChange.setType(CardActivityChange.TYPE.SHORT_BREAK);
+						else
+							cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);
+					}
 					else
-						cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);
+						cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);
 				}
-				else
-					cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);					
+				else {
+					if (!activityChangeInfo.getC().equals("indeterminado"))
+						cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);
+					else
+						cardActivityDailyChange.setType(CardActivityChange.TYPE.UNKNOWN);
+					
+					//cardActivityDailyChange.setType(CardActivityChange.TYPE.BREAK_REST);
+				}
 			}
 			else if (activityChangeInfo.getP().equals("insertada") && activityChangeInfo.getAa().equals("DISPONIBILIDAD")) {
 				if (!activityChangeInfo.getC().equals("indeterminado"))

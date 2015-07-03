@@ -37,7 +37,7 @@ public abstract class Agent extends Audit implements Serializable {
 	@Size(max=255)
 	private String email;
 				
-	@OneToOne(orphanRemoval=true, cascade=CascadeType.ALL )
+	@OneToOne(orphanRemoval=true, cascade=CascadeType.ALL)
 	@JoinColumn(name="USER_ID")		
 	private User user;
 	

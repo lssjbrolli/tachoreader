@@ -405,6 +405,11 @@
     	@include valo-panel-caption-style($background-color: $color1);
     }
     
+    $color3: #FE902A;
+    .v-panel-caption-color3 {
+    	@include valo-panel-caption-style($background-color: $color3);
+    }
+    
     .v-label-detail-chart-tittle {
     	color:#44698B;
 	  	fill:#44698B;
@@ -412,5 +417,4 @@
 	  	font-size:16px;
 	  	font-weight:bold;
     }
-  }
 }

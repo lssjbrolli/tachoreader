@@ -16,7 +16,7 @@ import com.thingtrack.tachoreader.domain.CardActivityChange;
 import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
 import com.thingtrack.tachoreader.domain.Driver;
 
-public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {		
+public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {
 	@Override
 	public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date dailyDate) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");

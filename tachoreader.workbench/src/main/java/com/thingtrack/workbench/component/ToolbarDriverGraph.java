@@ -189,6 +189,11 @@ public class ToolbarDriverGraph extends AbstractI18NCustomComponent {
 		toolbarLayout.setMargin(false);
 		toolbarLayout.setSpacing(true);
 		
+		DateFilter dateFilter = new DateFilter();
+		dateFilter.setWidth("-1px");
+		dateFilter.setHeight("-1px");
+		toolbarLayout.addComponent(dateFilter);
+		
 		// lblDriver
 		lblDriver = new Label();
 		lblDriver.setImmediate(false);
@@ -200,7 +205,7 @@ public class ToolbarDriverGraph extends AbstractI18NCustomComponent {
 		// cmbDriverField
 		cmbDriverField = new ComboBox();
 		cmbDriverField.setImmediate(false);
-		cmbDriverField.setWidth("400px");
+		cmbDriverField.setWidth("350px");
 		cmbDriverField.setHeight("-1px");
 		toolbarLayout.addComponent(cmbDriverField);
 		
