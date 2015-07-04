@@ -39,6 +39,7 @@ import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
+import com.thingtrack.tachoreader.domain.Vehicle;
 import com.thingtrack.tachoreader.service.api.CardActivityDailyService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 
@@ -75,24 +76,6 @@ public class TachoServiceImpl implements TachoService {
 	public Tacho getByFile(String file) throws Exception {
 		return this.tachoDao.getByFile(file);
 	}
-	
-	@Override
-	public List<Tacho> getAll(int pageNumber, int pageSize, User user,									  
-			  Integer id, String cardNumber, String driverName, String vehicleRegistrationNumber, 
-			  Date creationDateFrom, Date creationDateTo) throws Exception {
-		return this.tachoDao.getAll(pageNumber, pageSize, user, 
-									 id, cardNumber, driverName, vehicleRegistrationNumber, 
-									 creationDateFrom, creationDateTo);
-	}
-	
-	@Override
-	public int getCount(int pageSize, User user,									  
-			 Integer id, String cardNumber, String driverName, String vehicleRegistrationNumber, 
-			 Date creationDateFrom, Date creationDateTo) throws Exception {
-		return this.tachoDao.getCount(pageSize, user, id, 
-									   cardNumber, driverName, vehicleRegistrationNumber,  
-									   creationDateFrom, creationDateTo);
-	}
 			 
 	@Override
 	public Tacho save(Tacho tacho) throws Exception {
@@ -102,6 +85,11 @@ public class TachoServiceImpl implements TachoService {
 	@Override
 	public void delete(Tacho tacho) throws Exception {
 		this.tachoDao.delete(tacho);	
+	}
+	
+	@Override
+	public List<Tacho> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception {
+		return this.tachoDao.getAll(vehicles, startActivityDate, endActivityDate);
 	}
 	
 	private CardActivityDaily registerDriverActivity(User user, Driver driver, Tacho tacho, CardActivityDailyRecord cardActivityDailyRecord, CardVehiclesUsed cardVehiclesUsed) throws ExceptionVehicleNotExist {

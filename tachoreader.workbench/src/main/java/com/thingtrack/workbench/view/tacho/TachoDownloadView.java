@@ -88,9 +88,16 @@ public class TachoDownloadView extends AbstractI18NView implements View {
 			}
 			
 			@Override
-			public void activeStepChanged(WizardStepActivationEvent event) {				
-				if (event.getActivatedStep().getContent() instanceof WizardStepResult)
+			public void activeStepChanged(WizardStepActivationEvent event) {		
+				if (event.getActivatedStep().getContent() instanceof WizardStepDriver) {
+					wizardStepDriver.loadDatasource(wizardStepFilter.getVehicles(), 
+							                        wizardStepFilter.getStartActivityDate(), 
+							                        wizardStepFilter.getEndActivityDate());
+				}
+								
+				if (event.getActivatedStep().getContent() instanceof WizardStepResult) {
 					Notification.show("Execute filter List!");					
+				}
 			}
 		});
 	}

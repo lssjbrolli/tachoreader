@@ -8,16 +8,12 @@ import java.util.List;
 import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.Tacho;
 import com.thingtrack.tachoreader.domain.User;
+import com.thingtrack.tachoreader.domain.Vehicle;
 
 public interface TachoService {
     public List<Tacho> getAll(Organization organization) throws Exception;
+    public List<Tacho> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception;
     public Tacho getByFile(String file) throws Exception;
-    public List<Tacho> getAll(int pageNumber, int pageSize, User user,									  
-			  Integer id, String cardNumber, String driverName, String vehicleRegistrationNumber, 
-			  Date creationDateFrom, Date creationDateTo) throws Exception;
-    public int getCount(int pageSize, User user,									  
-			 Integer id, String cardNumber, String driverName, String vehicleRegistrationNumber, 
-			 Date creationDateFrom, Date creationDateTo) throws Exception;
 	public Tacho save(Tacho tacho) throws Exception;
 	public void delete(Tacho tacho) throws Exception;
 	public List<Tacho> setRegisterTacho(User user, String code, String password, File file, String fileName, String tachoRepository) throws Exception;
