@@ -54,7 +54,7 @@ public class CardActivityDaily extends Audit implements Serializable {
 	private List<CardActivityChange> cardActivityDailyChanges = new ArrayList<CardActivityChange>();
 	
 	@ManyToMany(mappedBy="cardsActivityDaily")
-    private List<Tacho> tachos = new ArrayList<Tacho>();
+    private List<TachoDriver> tachos = new ArrayList<TachoDriver>();
 	
 	public Integer getId() {
 		return id;
@@ -111,11 +111,11 @@ public class CardActivityDaily extends Audit implements Serializable {
 		cardActivityDailyChanges.add(cardActivityDailyChange);		
 	}
 	
-	public List<Tacho> getTachos() {
+	public List<TachoDriver> getTachos() {
 		return Collections.unmodifiableList(tachos);
 	}
 	
-	public void addTachos(Tacho tacho) {
+	public void addTachos(TachoDriver tacho) {
 		if (tachos.contains(tacho))
 			return;
 		

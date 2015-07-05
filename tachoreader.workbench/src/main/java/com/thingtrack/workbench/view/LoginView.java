@@ -1,12 +1,12 @@
 package com.thingtrack.workbench.view;
 
 import java.io.File;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
 import org.tacografo.file.exception.ExceptionFileExist;
+import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
 import pl.exsio.plupload.Plupload;
 import pl.exsio.plupload.PluploadError;
@@ -35,9 +35,11 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.TachoDriver;
+import com.thingtrack.tachoreader.domain.TachoVehicle;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.AdministratorService;
+import com.thingtrack.tachoreader.service.api.TachoDriverService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NCustomComponent;
@@ -126,7 +128,7 @@ public class LoginView extends AbstractI18NCustomComponent {
 	private String tachoRepository;
 	
 	private AdministratorService administratorService;
-	private TachoService tachoService;	
+	private TachoService tachoService;
 	
 	private static final int TAB_ADMIN = 0;
 	private static final int TAB_REGISTER = 1;
@@ -375,38 +377,43 @@ public class LoginView extends AbstractI18NCustomComponent {
 	            		return;
 	            	
 		    	   try {			    	   	 
-			    	   	List<Tacho> tachos = tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
-			    	   			                                           tachoUsernameField.getValue(), 
-								    	   								   tachoPasswordField.getValue(), 
-								    	   								   (File)file.getUploadedFile(), 
-								    	   								   file.getName(),
-								    	   								   tachoRepository);
-				    	// Broadcast tachos inserted
-						for (Tacho tacho : tachos)
-							Broadcaster.broadcast(tacho);
+		    		   Object tacho = tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
+											                                   tachoUsernameField.getValue(), 
+																			   tachoPasswordField.getValue(), 
+																			   (File)file.getUploadedFile(), 
+																			   file.getName(),
+																			   tachoRepository);
+		    		   
+				    	// Broadcast tacho inserted
+		    		   if (tacho instanceof TachoDriver)
+		    			   Broadcaster.broadcast((TachoDriver)tacho);
+		    		   /*if (tacho instanceof TachoVehicle)
+		    			   Broadcaster.broadcast((TachoVehicle)tacho);*/
 						
-						NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
-					} catch (ExceptionDriverNotExist e) {	
-						errorTachoValidation = true;
-						
-						tachoUsernameField.setValue(null);
-						tachoPasswordField.setValue(null);
-						
-						NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + e.getCardNumber() + " registered");					
-					} catch (ExceptionFileExist e) {	
-						errorTachoValidation = true;
-						
-						tachoUsernameField.setValue(null);
-						tachoPasswordField.setValue(null);
-						
-						NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + e.getFileName() + " has already been registered");					
+					   NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
 					} catch (Exception e) {
 						errorTachoValidation = true;
 						
 						tachoUsernameField.setValue(null);
 						tachoPasswordField.setValue(null);
 						
-						NotificationHelper.sendErrorNotification("Tacho View", e.getMessage());					
+						if (e.getCause() instanceof ExceptionVehicleNotExist) {
+							ExceptionVehicleNotExist ex = (ExceptionVehicleNotExist) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Tacho View", "The vehicle " + ex.getRegistration() + " is not registered");
+						}
+						else if (e.getCause() instanceof ExceptionFileExist) {
+							ExceptionFileExist ex = (ExceptionFileExist) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + ex.getFileName() + " has already been registered");
+						}
+						else if (e.getCause() instanceof ExceptionDriverNotExist) {
+							ExceptionDriverNotExist ex = (ExceptionDriverNotExist) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + ex.getCardNumber() + " registered");
+						}
+						else
+							NotificationHelper.sendErrorNotification("Tacho View", e.getMessage());					
 					}		    	   	
 		       }
 		});
@@ -518,8 +525,7 @@ public class LoginView extends AbstractI18NCustomComponent {
 		
 		// get Tacho Repository configuration 
 		if (appConfig != null)
-			tachoRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();
-		
+			tachoRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();		
 	}
 	
 	@Override

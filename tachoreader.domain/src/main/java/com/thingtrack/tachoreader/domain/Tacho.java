@@ -1,29 +1,20 @@
 package com.thingtrack.tachoreader.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="TACHO")
-public class Tacho extends Audit implements Serializable {
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class Tacho extends Audit implements Serializable {
 
 	@Id
 	@Column(name="ID")
@@ -33,17 +24,6 @@ public class Tacho extends Audit implements Serializable {
 	@Column(name="FILE", nullable=false, length=255)
 	private String file;
 
-	@ManyToMany(cascade={CascadeType.ALL})
-	@JoinTable(name="TACHO_CARD_ACTIVITY_DAILY",
-			   joinColumns=@JoinColumn(name="TACHO_ID"),
-			   inverseJoinColumns=@JoinColumn(name="CARD_ACTIVITY_DAILY_ID"))
-	@OrderBy("dailyDate ASC")
-	private List<CardActivityDaily> cardsActivityDaily = new ArrayList<CardActivityDaily>();
-	
-	@Column(name="TYPE", nullable=false, length=55)
-	@Enumerated(EnumType.STRING)
-	private TYPE type;
-	
 	@Transient
 	private boolean selected = false;
 	
@@ -70,31 +50,12 @@ public class Tacho extends Audit implements Serializable {
 		this.file = file;
 	}
 	
-	public TYPE getType() {
-		return type;
-	}
-
-	public void setType(TYPE type) {
-		this.type = type;
-	}
-	
 	public boolean isSelected() {
 		return selected;
 	}
 
 	public void setSelected(boolean selected) {
 		this.selected = selected;
-	}
-
-	public List<CardActivityDaily> getCardsActivityDaily() {
-		return Collections.unmodifiableList(cardsActivityDaily);
-	}
-
-	public void addCardActivityDaily(CardActivityDaily cardActivityDaily) {
-		if (cardsActivityDaily.contains(cardActivityDaily))
-			return;		
-		
-		cardsActivityDaily.add(cardActivityDaily);
 	}
 
 	@Override
@@ -104,7 +65,6 @@ public class Tacho extends Audit implements Serializable {
 		result = prime * result + ((file == null) ? 0 : file.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + (selected ? 1231 : 1237);
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -129,14 +89,12 @@ public class Tacho extends Audit implements Serializable {
 			return false;
 		if (selected != other.selected)
 			return false;
-		if (type != other.type)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Tacho [id=" + id + ", file=" + file + ", type=" + type
+		return "Tacho [id=" + id + ", file=" + file
 				+ ", selected=" + selected + "]";
 	}	
 }

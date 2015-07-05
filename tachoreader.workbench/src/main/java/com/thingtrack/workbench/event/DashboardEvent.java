@@ -1,7 +1,7 @@
 package com.thingtrack.workbench.event;
 
 import com.thingtrack.tachoreader.domain.Organization;
-import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.workbench.view.DashboardViewType;
 
@@ -125,13 +125,13 @@ public abstract class DashboardEvent {
     }
     
     public static class TachoFileEvent {
-   	 private final Tacho tacho;
+   	 private final TachoDriver tacho;
 
-        public TachoFileEvent(final Tacho tacho) {
+        public TachoFileEvent(final TachoDriver tacho) {
             this.tacho = tacho;
         }
 
-        public Tacho getTacho() {
+        public TachoDriver getTacho() {
             return tacho;
         }
    }

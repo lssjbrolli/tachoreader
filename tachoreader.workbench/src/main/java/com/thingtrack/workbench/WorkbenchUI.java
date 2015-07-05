@@ -28,7 +28,7 @@ import com.thingtrack.workbench.view.LoginView;
 import com.thingtrack.workbench.view.MainView;
 import com.thingtrack.workbench.component.Broadcaster;
 import com.thingtrack.tachoreader.domain.Administrator;
-import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.UserService;
 import com.thingtrack.workbench.event.DashboardEvent.TachoFileEvent;
@@ -66,7 +66,7 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
      */
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
-    private List<Tacho> tachoNotifications = new ArrayList<Tacho>();
+    private List<TachoDriver> tachoNotifications = new ArrayList<TachoDriver>();
     
     private User user;
     
@@ -97,7 +97,7 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
     	return getCurrent().user;    	
     }
     
-    public List<Tacho> getNotifications() {    	
+    public List<TachoDriver> getNotifications() {    	
     	return getCurrent().tachoNotifications;    	
     }
     
@@ -307,7 +307,7 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
     }
     
 	@Override
-	public void receiveBroadcast(final Tacho tacho) {
+	public void receiveBroadcast(final TachoDriver tacho) {
 		// Must lock the session to execute logic safely
         access(new Runnable() {
             @Override

@@ -6,15 +6,15 @@ import java.util.List;
 import javax.persistence.Query;
 
 import com.thingtrack.konekti.dao.template.JpaDao;
-import com.thingtrack.tachoreader.dao.api.TachoDao;
+import com.thingtrack.tachoreader.dao.api.TachoDriverDao;
 import com.thingtrack.tachoreader.domain.Organization;
-import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.tachoreader.domain.Vehicle;
 
-public class TachoDaoImpl extends JpaDao<Tacho, Integer> implements TachoDao {
+public class TachoDriverDaoImpl extends JpaDao<TachoDriver, Integer> implements TachoDriverDao {
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Tacho> getAll(Organization organization) throws Exception {
+	public List<TachoDriver> getAll(Organization organization) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		
 		if (organization != null)
@@ -29,7 +29,7 @@ public class TachoDaoImpl extends JpaDao<Tacho, Integer> implements TachoDao {
 	}
 	
 	@Override
-	public Tacho getByFile(String file) throws Exception {
+	public TachoDriver getByFile(String file) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		
 		queryString.append(" WHERE p.file = :file");
@@ -38,12 +38,12 @@ public class TachoDaoImpl extends JpaDao<Tacho, Integer> implements TachoDao {
 		
 		query.setParameter("file", file);
 			
-		return (Tacho) query.getSingleResult();
+		return (TachoDriver) query.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Tacho> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception {
+	public List<TachoDriver> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM CardActivityDaily c JOIN c.tachos p");
 		queryString.append(" WHERE 1=1");
 		

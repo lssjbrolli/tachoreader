@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 import com.google.common.eventbus.Subscribe;
-import com.thingtrack.tachoreader.domain.Tacho;
+import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.event.DashboardEventBus;
 import com.thingtrack.workbench.event.DashboardEvent.CloseOpenWindowsEvent;
@@ -207,7 +207,7 @@ public final class DashboardView extends Panel implements View {
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         notificationsLayout.addComponent(title);
 
-        for (Tacho notification : WorkbenchUI.getCurrent().getNotifications()) {
+        for (TachoDriver notification : WorkbenchUI.getCurrent().getNotifications()) {
         	notificationLayout = new VerticalLayout();
             notificationLayout.addStyleName("notification-item");
 

@@ -29,7 +29,6 @@ public class Administrator extends Agent {
 	}
 		
 	public void addOrganization(Organization organization) {
-		organizations.add(organization);
-		
+		organizations.add(organization);		
 	}
 }
