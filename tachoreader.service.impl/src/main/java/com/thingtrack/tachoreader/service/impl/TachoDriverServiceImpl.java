@@ -15,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.tacografo.file.FileBlockTGD;
 import org.tacografo.file.cardblockdriver.CardDriverActivity;
 import org.tacografo.file.cardblockdriver.CardIdentification;
@@ -35,7 +36,6 @@ import com.thingtrack.tachoreader.dao.api.VehicleDao;
 import com.thingtrack.tachoreader.domain.CardActivityChange;
 import com.thingtrack.tachoreader.domain.Driver;
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
-import com.thingtrack.tachoreader.domain.Organization;
 import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.domain.Vehicle;
@@ -57,15 +57,10 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 	@Autowired
 	private CardActivityDailyDao cardActivityDailyDao;	
 	
-	final static Logger logger = Logger.getLogger("TachoServiceImpl");
+	final static Logger logger = Logger.getLogger("TachoDriverServiceImpl");
 	
 	final static String ZERO = "0";
 	final static String ONE = "1";
-	
-	@Override
-	public List<TachoDriver> getAll(Organization organization) throws Exception {
-		return this.tachoDriverDao.getAll(organization);
-	}
 	
 	@Override
 	public TachoDriver getByFile(String file) throws Exception {
@@ -87,14 +82,16 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 		return this.tachoDriverDao.getAll(vehicles, startActivityDate, endActivityDate);
 	}
 	
+	@Transactional(noRollbackFor = Exception.class)
 	private CardActivityDaily registerDriverActivity(User user, Driver driver, TachoDriver tacho, CardActivityDailyRecord cardActivityDailyRecord, CardVehiclesUsed cardVehiclesUsed) throws ExceptionVehicleNotExist {
 		Calendar cal = Calendar.getInstance();
 					
 		CardActivityDaily cardActivityDaily = new CardActivityDaily();
 		cardActivityDaily.setCreatedBy(user);
 		cardActivityDaily.setCreationDate(new Date());
-		cardActivityDaily.setDriver(driver);
-		cardActivityDaily.addTachos(tacho);
+		//cardActivityDaily.setDriver(driver);
+		
+		cardActivityDaily.addTachoDriver(tacho);
 		cardActivityDaily.setDistance(cardActivityDailyRecord.getActivityDayDistance());			
 		cardActivityDaily.setDailyDate(cardActivityDailyRecord.getActivityRecordDate());
 		
@@ -280,6 +277,7 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 				tachoDriver.setFile(fileName);
 				tachoDriver.setCreatedBy(tachoUser);	
 				tachoDriver.setCreationDate(new Date());
+				tachoDriver.setDriver(driver);
 				
 				// configure activity daily for this tacho
 				for (CardActivityDailyRecord cardActivityDailyRecord : cardDriverActivity.getActivityDailyRecords()) {
@@ -290,8 +288,6 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 						tachoDriver.addCardActivityDaily(registerDriverActivity(user, driver, tachoDriver, cardActivityDailyRecord, cardVehiclesUsed));						
 					}
 				}
-				
-				//tachos.add(save(tachoDriver));
 			}
 			catch (Exception ex) {
 				throw new Exception("Error registering Tacho", ex);					

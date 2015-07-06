@@ -64,8 +64,8 @@ public class WizardStepFilter extends AbstractI18NCustomComponent implements Wiz
 		pnHelpStepTachoFilter.setIcon(FontAwesome.INFO_CIRCLE);
 		pnHelpStepTachoFilter.addStyleName("color3");	
 		
-		StringBuffer helpTachosUpload = new StringBuffer("Desde esta pantalla usted podrá escojer los filtros para seleccionar los ficheros de tacógrafo y/o tarjeta. ");
-		helpTachosUpload.append("Para comenzar pulse el botón \"Siguiente\".");
+		StringBuffer helpTachosUpload = new StringBuffer("Desde esta pantalla usted podrá escojer los filtros para seleccionar los ficheros de tacógrafo y/o tarjeta de conductor.");
+		helpTachosUpload.append(" Para comenzar pulse el botón \"Siguiente\".");
 				
 		lblHelpTachoFilterStep.setContentMode(ContentMode.HTML);
 		lblHelpTachoFilterStep.setValue(helpTachosUpload.toString());

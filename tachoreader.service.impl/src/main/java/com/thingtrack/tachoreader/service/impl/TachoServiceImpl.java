@@ -10,13 +10,14 @@ import com.thingtrack.tachoreader.domain.Tacho.TYPE;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.TachoDriverService;
 import com.thingtrack.tachoreader.service.api.TachoService;
+import com.thingtrack.tachoreader.service.api.TachoVehicleService;
 
 public class TachoServiceImpl implements TachoService {	
 	@Autowired
 	private TachoDriverService tachoDriverService;
 	
-	//@Autowired
-	//private TachoVehicleService tachoVehicleService;
+	@Autowired
+	private TachoVehicleService tachoVehicleService;
 	
 	@Override
 	public Object setRegisterTacho(User user, String code, String password, File tachoFile, String fileName, String tachoRepository) throws Exception {		
@@ -38,7 +39,7 @@ public class TachoServiceImpl implements TachoService {
 			tacho = tachoDriverService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);
 		}
 		else if (tachoType.equals(TYPE.VEHICLE)) {
-			throw new Exception("Is not Implemented!");
+			tacho = tachoVehicleService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);
 		}
 		else if (tachoType.equals(TYPE.COMPANY)) {
 			throw new Exception("Is not Implemented!");

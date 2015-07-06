@@ -6,13 +6,13 @@ import java.util.List;
 import javax.persistence.Query;
 
 import com.thingtrack.konekti.dao.template.JpaDao;
-import com.thingtrack.tachoreader.dao.api.TachoDriverDao;
-import com.thingtrack.tachoreader.domain.TachoDriver;
+import com.thingtrack.tachoreader.dao.api.TachoVehicleDao;
+import com.thingtrack.tachoreader.domain.TachoVehicle;
 import com.thingtrack.tachoreader.domain.Vehicle;
 
-public class TachoDriverDaoImpl extends JpaDao<TachoDriver, Integer> implements TachoDriverDao {
+public class TachoVehicleDaoImpl extends JpaDao<TachoVehicle, Integer> implements TachoVehicleDao {
 	@Override
-	public TachoDriver getByFile(String file) throws Exception {
+	public TachoVehicle getByFile(String file) throws Exception {
 		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p");
 		
 		queryString.append(" WHERE p.file = :file");
@@ -21,21 +21,21 @@ public class TachoDriverDaoImpl extends JpaDao<TachoDriver, Integer> implements 
 		
 		query.setParameter("file", file);
 			
-		return (TachoDriver) query.getSingleResult();
+		return (TachoVehicle) query.getSingleResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<TachoDriver> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception {
-		StringBuffer queryString = new StringBuffer("SELECT p FROM CardActivityDaily c JOIN c.tachosDriver p");
+	public List<TachoVehicle> getAll(List<Vehicle> vehicles, Date startActivityDate, Date endActivityDate) throws Exception {
+		StringBuffer queryString = new StringBuffer("SELECT p FROM TachoVehicle p");
 		queryString.append(" WHERE 1=1");
 		
 		if (vehicles.size() > 0)
-			queryString.append(" AND c.vehicles IN :vehicles");
+			queryString.append(" AND p.vehicle IN :vehicles");
 		if (startActivityDate != null)
-			queryString.append(" AND c.dailyDate >= :startActivityDate");
+			queryString.append(" AND p.dailyDate >= :startActivityDate");
 		if (endActivityDate != null)
-			queryString.append(" AND c.dailyDate <= :endActivityDate");
+			queryString.append(" AND p.dailyDate <= :endActivityDate");
 		
 		Query query = getEntityManager().createQuery(queryString.toString());
 		query.setMaxResults(1);

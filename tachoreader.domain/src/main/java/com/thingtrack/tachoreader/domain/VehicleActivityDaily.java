@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -31,10 +30,6 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
-		
-	@ManyToOne
-	@JoinColumn(name="VEHICLE_ID", nullable=false)	
-	private Vehicle vehicle;
 
 	@ManyToMany(cascade={CascadeType.ALL})
 	@JoinTable(name="VEHICLE_ACTIVITY_DAILY_DRIVER",
@@ -62,14 +57,6 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Vehicle getVehicle() {
-		return vehicle;
-	}
-
-	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle;
 	}
 
 	public float getOdometer() {
@@ -111,11 +98,11 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 		vehicleActivitiesDailyChange.add(vehicleActivityChange);		
 	}
 	
-	public List<TachoVehicle> getTachos() {
+	public List<TachoVehicle> getTachosDriver() {
 		return Collections.unmodifiableList(tachosVehicle);
 	}
 	
-	public void addTachos(TachoVehicle tachoVehicle) {
+	public void addTachoVehicle(TachoVehicle tachoVehicle) {
 		if (tachosVehicle.contains(tachoVehicle))
 			return;
 		
@@ -129,7 +116,6 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 		result = prime * result
 				+ ((dailyDate == null) ? 0 : dailyDate.hashCode());
 		result = prime * result + Float.floatToIntBits(odometer);
-		result = prime * result + ((vehicle == null) ? 0 : vehicle.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -150,12 +136,7 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 			return false;
 		if (Float.floatToIntBits(odometer) != Float
 				.floatToIntBits(other.odometer))
-			return false;
-		if (vehicle == null) {
-			if (other.vehicle != null)
-				return false;
-		} else if (!vehicle.equals(other.vehicle))
-			return false;
+			return false;		
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -166,7 +147,7 @@ public class VehicleActivityDaily extends Audit implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CardActivityDaily [id=" + id + ", vehicle=" + vehicle
+		return "CardActivityDaily [id=" + id
 				+ ", odometer=" + odometer + ", dailyDate=" + dailyDate + "]";
 	}
 }

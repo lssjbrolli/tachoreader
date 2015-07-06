@@ -39,7 +39,6 @@ import com.thingtrack.tachoreader.domain.TachoDriver;
 import com.thingtrack.tachoreader.domain.TachoVehicle;
 import com.thingtrack.tachoreader.domain.User;
 import com.thingtrack.tachoreader.service.api.AdministratorService;
-import com.thingtrack.tachoreader.service.api.TachoDriverService;
 import com.thingtrack.tachoreader.service.api.TachoService;
 import com.thingtrack.workbench.WorkbenchUI;
 import com.thingtrack.workbench.component.AbstractI18NCustomComponent;
@@ -349,7 +348,6 @@ public class LoginView extends AbstractI18NCustomComponent {
 		//show notification after file is uploaded		
 		tachoButton.addStyleName("danger");
 		tachoButton.setMultiSelection(true);
-		//tachoButton.setPreventDuplicates(true);
 		tachoButton.addFilter(new PluploadFilter("Tachograph files", "ddd,tgd,crd,esm,dc,tdc"));		
 		tachoButton.addFileUploadedListener(new Plupload.FileUploadedListener() {
 		       @Override
@@ -378,11 +376,11 @@ public class LoginView extends AbstractI18NCustomComponent {
 	            	
 		    	   try {			    	   	 
 		    		   Object tacho = tachoService.setRegisterTacho(WorkbenchUI.getCurrent().getUser(),
-											                                   tachoUsernameField.getValue(), 
-																			   tachoPasswordField.getValue(), 
-																			   (File)file.getUploadedFile(), 
-																			   file.getName(),
-																			   tachoRepository);
+											                        tachoUsernameField.getValue(), 
+																	tachoPasswordField.getValue(), 
+																	(File)file.getUploadedFile(), 
+																	file.getName(),
+																	tachoRepository);
 		    		   
 				    	// Broadcast tacho inserted
 		    		   if (tacho instanceof TachoDriver)

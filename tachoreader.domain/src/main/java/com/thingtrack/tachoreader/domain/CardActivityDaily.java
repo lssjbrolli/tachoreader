@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -31,17 +30,13 @@ public class CardActivityDaily extends Audit implements Serializable {
 	@Column(name="ID")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
-		
-	@ManyToOne
-	@JoinColumn(name="DRIVER_ID", nullable=false)	
-	private Driver driver;
 
 	@ManyToMany(cascade={CascadeType.ALL})
 	@JoinTable(name="CARD_ACTIVITY_DAILY_VEHICLE",
 			   joinColumns=@JoinColumn(name="CARD_ACTIVITY_DAILY_ID"),
 			   inverseJoinColumns=@JoinColumn(name="VEHICLE_ID"))
 	private List<Vehicle> vehicles = new ArrayList<Vehicle>();
-		
+	
 	@Column(name="DISTANCE", nullable=false)
 	private float distance;
 
@@ -54,7 +49,7 @@ public class CardActivityDaily extends Audit implements Serializable {
 	private List<CardActivityChange> cardActivityDailyChanges = new ArrayList<CardActivityChange>();
 	
 	@ManyToMany(mappedBy="cardsActivityDaily")
-    private List<TachoDriver> tachos = new ArrayList<TachoDriver>();
+    private List<TachoDriver> tachosDriver = new ArrayList<TachoDriver>();
 	
 	public Integer getId() {
 		return id;
@@ -62,14 +57,6 @@ public class CardActivityDaily extends Audit implements Serializable {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Driver getDriver() {
-		return driver;
-	}
-
-	public void setDriver(Driver driver) {
-		this.driver = driver;
 	}
 
 	public float getDistance() {
@@ -111,15 +98,15 @@ public class CardActivityDaily extends Audit implements Serializable {
 		cardActivityDailyChanges.add(cardActivityDailyChange);		
 	}
 	
-	public List<TachoDriver> getTachos() {
-		return Collections.unmodifiableList(tachos);
+	public List<TachoDriver> getTachosDriver() {
+		return Collections.unmodifiableList(tachosDriver);
 	}
 	
-	public void addTachos(TachoDriver tacho) {
-		if (tachos.contains(tacho))
+	public void addTachoDriver(TachoDriver tachoDriver) {
+		if (tachosDriver.contains(tachoDriver))
 			return;
 		
-		tachos.add(tacho);		
+		tachosDriver.add(tachoDriver);		
 	}
 
 	@Override
@@ -129,7 +116,6 @@ public class CardActivityDaily extends Audit implements Serializable {
 		result = prime * result
 				+ ((dailyDate == null) ? 0 : dailyDate.hashCode());
 		result = prime * result + Float.floatToIntBits(distance);
-		result = prime * result + ((driver == null) ? 0 : driver.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -150,12 +136,7 @@ public class CardActivityDaily extends Audit implements Serializable {
 			return false;
 		if (Float.floatToIntBits(distance) != Float
 				.floatToIntBits(other.distance))
-			return false;
-		if (driver == null) {
-			if (other.driver != null)
-				return false;
-		} else if (!driver.equals(other.driver))
-			return false;
+			return false;		
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -166,7 +147,7 @@ public class CardActivityDaily extends Audit implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CardActivityDaily [id=" + id + ", driver=" + driver
+		return "CardActivityDaily [id=" + id
 				+ ", distance=" + distance + ", dailyDate=" + dailyDate + "]";
 	}
 }

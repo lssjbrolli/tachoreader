@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -18,13 +19,25 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TACHO_VEHICLE")
 public class TachoVehicle extends Tacho implements Serializable {
+	@ManyToOne
+	@JoinColumn(name="VEHICLE_ID", nullable=false)	
+	private Vehicle vehicle;
+	
 	@ManyToMany(cascade={CascadeType.ALL})
 	@JoinTable(name="TACHO_VEHICLE_ACTIVITY_DAILY",
 			   joinColumns=@JoinColumn(name="TACHO_ID"),
 			   inverseJoinColumns=@JoinColumn(name="VEHICLE_ACTIVITY_DAILY_ID"))
 	@OrderBy("dailyDate ASC")
 	private List<VehicleActivityDaily> vehicleActivitiesDaily = new ArrayList<VehicleActivityDaily>();
-		
+	
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+	}
+	
 	public List<VehicleActivityDaily> getVehicleActivitiesDaily() {
 		return Collections.unmodifiableList(vehicleActivitiesDaily);
 	}

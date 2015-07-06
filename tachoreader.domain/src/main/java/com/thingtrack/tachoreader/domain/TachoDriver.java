@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -18,13 +19,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name="TACHO_DRIVER")
 public class TachoDriver extends Tacho implements Serializable {
+	@ManyToOne
+	@JoinColumn(name="DRIVER_ID", nullable=false)	
+	private Driver driver;
+	
 	@ManyToMany(cascade={CascadeType.ALL})
 	@JoinTable(name="TACHO_CARD_ACTIVITY_DAILY",
 			   joinColumns=@JoinColumn(name="TACHO_ID"),
 			   inverseJoinColumns=@JoinColumn(name="CARD_ACTIVITY_DAILY_ID"))
 	@OrderBy("dailyDate ASC")
 	private List<CardActivityDaily> cardsActivityDaily = new ArrayList<CardActivityDaily>();
-		
+	
 	public List<CardActivityDaily> getCardsActivityDaily() {
 		return Collections.unmodifiableList(cardsActivityDaily);
 	}
@@ -48,5 +53,13 @@ public class TachoDriver extends Tacho implements Serializable {
 			return cardsActivityDaily.get(cardsActivityDaily.size() - 1).getDailyDate();
 		
 		return null;
+	}
+
+	public Driver getDriver() {
+		return driver;
+	}
+
+	public void setDriver(Driver driver) {
+		this.driver = driver;
 	}
 }
