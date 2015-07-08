@@ -19,7 +19,7 @@ import com.thingtrack.tachoreader.domain.Driver;
 public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer> implements CardActivityDailyDao {
 	@Override
 	public CardActivityDaily getCardActivityDailyByDriver(Driver driver, Date dailyDate) throws Exception {
-		StringBuffer queryString = new StringBuffer("SELECT p FROM " + getEntityName() + " p JOIN p.tachosDriver t");
+		StringBuffer queryString = new StringBuffer("SELECT DISTINCT p FROM " + getEntityName() + " p JOIN p.tachosDriver t");
 		queryString.append(" WHERE t.driver = :driver");
 		queryString.append(" AND p.dailyDate = :dailyDate");
 		
@@ -33,8 +33,8 @@ public class CardActivityDailyDaoImpl extends JpaDao<CardActivityDaily, Integer>
 	
 	@Override
 	public Map<TYPE, Float> getCardActivityDailyResumeByDriver(Driver driver, Date dailyDate) throws Exception {
-		StringBuffer queryString = new StringBuffer("SELECT DISTINCT p FROM " + getEntityName() + " p");
-		queryString.append(" WHERE p.driver = :driver");
+		StringBuffer queryString = new StringBuffer("SELECT DISTINCT p FROM " + getEntityName() + " p JOIN p.tachosDriver t");
+		queryString.append(" WHERE t.driver = :driver");
 		queryString.append(" AND p.dailyDate = :dailyDate");
 		
 		Query query = (Query) getEntityManager().createQuery(queryString.toString());

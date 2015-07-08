@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.NoResultException;
+
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
@@ -139,8 +141,12 @@ public class DriverActivityDailyCard extends CustomComponent {
 		try {
 			cardActivityDailyChangeGraphs = cardActivityDailyService.getCardActivityDailyResumeByDriver(driver, registerDate);
 		}
+		catch (NoResultException ex) {
+			return;
+		}
 		catch (Exception ex) {
-			ex.getMessage();
+			NotificationHelper.sendErrorNotification("Error Resume Driver Activity", ex.getMessage());
+			return;
 		}
 				
 		driverActivityChart = new Chart(ChartType.PIE);
@@ -201,8 +207,18 @@ public class DriverActivityDailyCard extends CustomComponent {
 	}
 	
 	private void setDetailDriverActivityChart(Driver driver, Date registerDate) throws Exception {
-		CardActivityDaily cardActivityDaily = cardActivityDailyService.getCardActivityDailyByDriver(driver, registerDate);
-
+		CardActivityDaily cardActivityDaily = null;
+		try {
+			cardActivityDaily = cardActivityDailyService.getCardActivityDailyByDriver(driver, registerDate);		
+		}
+		catch (NoResultException ex) {
+			return;
+		}
+		catch (Exception ex) {
+			NotificationHelper.sendErrorNotification("Error Resume Driver Activity", ex.getMessage());
+			return;
+		}
+		
 		// set detail Data
 		lblKilometers.setValue("Kilometers: " + cardActivityDaily.getDistance() + "Km");
 		//lblVehicle.setValue("Vehicle Registration: " + cardActivityDaily.getVehicle().getRegistration()); //TODO
