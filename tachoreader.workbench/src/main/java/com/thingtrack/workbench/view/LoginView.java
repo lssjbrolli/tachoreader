@@ -3,8 +3,9 @@ package com.thingtrack.workbench.view;
 import java.io.File;
 import java.util.Locale;
 
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.tacografo.file.exception.ExceptionCardDriver;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
+import org.tacografo.file.exception.ExceptionDriverNotOrganization;
 import org.tacografo.file.exception.ExceptionFileExist;
 import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
@@ -124,7 +125,7 @@ public class LoginView extends AbstractI18NCustomComponent {
 	 * visual editor.
 	 */
 	
-	private String tachoRepository;
+	//private String tachoRepository;
 	
 	private AdministratorService administratorService;
 	private TachoService tachoService;
@@ -380,7 +381,7 @@ public class LoginView extends AbstractI18NCustomComponent {
 																	tachoPasswordField.getValue(), 
 																	(File)file.getUploadedFile(), 
 																	file.getName(),
-																	tachoRepository);
+																	WorkbenchUI.getCurrent().getTachoRepository());
 		    		   
 				    	// Broadcast tacho inserted
 		    		   if (tacho instanceof TachoDriver)
@@ -395,23 +396,33 @@ public class LoginView extends AbstractI18NCustomComponent {
 						tachoUsernameField.setValue(null);
 						tachoPasswordField.setValue(null);
 						
-						if (e.getCause() instanceof ExceptionVehicleNotExist) {
-							ExceptionVehicleNotExist ex = (ExceptionVehicleNotExist) e.getCause();
-							
-							NotificationHelper.sendErrorNotification("Tacho View", "The vehicle " + ex.getRegistration() + " is not registered");
-						}
-						else if (e.getCause() instanceof ExceptionFileExist) {
+						if (e.getCause() instanceof ExceptionFileExist) {
 							ExceptionFileExist ex = (ExceptionFileExist) e.getCause();
 							
-							NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + ex.getFileName() + " has already been registered");
+							NotificationHelper.sendErrorNotification("Error Tacho View", "The tacho " + ex.getFileName() + " has already been registered");
 						}
+						else if (e.getCause() instanceof ExceptionCardDriver) {
+							ExceptionCardDriver ex = (ExceptionCardDriver) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Error Tacho View", "The identification card " + ex.getTachoDriverIdentification() + " from your tacho is not the same as yours " + ex.getCardNumber() + " identification card registered. The Tacho is from " + ex.getTachoHolderName());
+						}
+						else if (e.getCause() instanceof ExceptionVehicleNotExist) {
+							ExceptionVehicleNotExist ex = (ExceptionVehicleNotExist) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Error Tacho View", "The vehicle " + ex.getRegistration() + " is not registered");
+						}
+						else if (e.getCause() instanceof ExceptionDriverNotOrganization) {
+							ExceptionDriverNotOrganization ex = (ExceptionDriverNotOrganization) e.getCause();
+							
+							NotificationHelper.sendErrorNotification("Error Tacho View", "The driver " + ex.getDriverName() + " from your tacho is not registered in your organization " + ex.getCompany());
+						}					
 						else if (e.getCause() instanceof ExceptionDriverNotExist) {
 							ExceptionDriverNotExist ex = (ExceptionDriverNotExist) e.getCause();
 							
-							NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + ex.getCardNumber() + " registered");
-						}
+							NotificationHelper.sendErrorNotification("Error Tacho View", "There is no driver with this identification card " + ex.getCardNumber() + " registered");
+						}									
 						else
-							NotificationHelper.sendErrorNotification("Tacho View", e.getMessage());					
+							NotificationHelper.sendErrorNotification("Error Tacho View", e.getMessage());				
 					}		    	   	
 		       }
 		});
@@ -517,13 +528,8 @@ public class LoginView extends AbstractI18NCustomComponent {
 	}
 
 	private void getServices() {
-		PropertySourcesPlaceholderConfigurer appConfig = (PropertySourcesPlaceholderConfigurer) WorkbenchUI.getCurrent().getApplicationContext().getBean("appConfig");
 		administratorService = (AdministratorService) WorkbenchUI.getCurrent().getApplicationContext().getBean("administratorService");
-		tachoService = (TachoService) WorkbenchUI.getCurrent().getApplicationContext().getBean("tachoService");
-		
-		// get Tacho Repository configuration 
-		if (appConfig != null)
-			tachoRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();		
+		tachoService = (TachoService) WorkbenchUI.getCurrent().getApplicationContext().getBean("tachoService");			
 	}
 	
 	@Override

@@ -33,22 +33,20 @@ public class TachoServiceImpl implements TachoService {
 			throw new Exception("Error uploading the tacho", e);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			throw new Exception("Tacho is corrupted", e);
-		}
-		
-		if (tachoType.equals(TYPE.DRIVER)) {
-			tacho = tachoDriverService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);
-		}
-		else if (tachoType.equals(TYPE.VEHICLE)) {
-			tacho = tachoVehicleService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);
-		}
-		else if (tachoType.equals(TYPE.COMPANY)) {
-			throw new Exception("Is not Implemented!");
-		}
-		else if (tachoType.equals(TYPE.TEST_CENTER)) {
-			throw new Exception("Is not Implemented!");
-		}
+		} catch (Exception e) {
+			tachoType = TYPE.VEHICLE;
+		} 
+
+		if (tachoType.equals(TYPE.DRIVER))
+			tacho = tachoDriverService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);		
+		else if (tachoType.equals(TYPE.VEHICLE))
+			tacho = tachoVehicleService.setRegisterTacho(user, code, password, tachoFile, fileName, tachoRepository);		
+		else if (tachoType.equals(TYPE.COMPANY))
+			throw new Exception("Is not Implemented!");		
+		else if (tachoType.equals(TYPE.TEST_CENTER))
+			throw new Exception("Is not Implemented!");		
 		else
-			throw new Exception("Is not Implemented!");
+			throw new Exception("Is not Implemented!");		
 		
 		return tacho;
 	}

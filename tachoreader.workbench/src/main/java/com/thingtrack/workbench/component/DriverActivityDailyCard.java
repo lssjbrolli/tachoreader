@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.persistence.NoResultException;
 
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
 import com.thingtrack.tachoreader.domain.CardActivityDaily;
 import com.thingtrack.tachoreader.domain.CardActivityChange;
 import com.thingtrack.tachoreader.domain.CardActivityChange.TYPE;
@@ -69,7 +67,6 @@ public class DriverActivityDailyCard extends CustomComponent {
 	private CardActivityDailyService cardActivityDailyService;
 	
 	private List<TachoDriver> tachos = null;
-	private String tachosRepository = null;
 	private TachoDriverService tachoDriverService;
 	private Chart driverActivityChart;
 	
@@ -87,7 +84,7 @@ public class DriverActivityDailyCard extends CustomComponent {
 		// TODO add user code here
 		getServices();
 		
-		getTachosRepository();
+		//getTachosRepository();
 		
 		// set panel style
 		TestIcon testIcon = new TestIcon(60);
@@ -105,19 +102,13 @@ public class DriverActivityDailyCard extends CustomComponent {
 			e.printStackTrace();
 		}	        	           		
 	}
-	
-	private void getTachosRepository() {
-		PropertySourcesPlaceholderConfigurer appConfig = (PropertySourcesPlaceholderConfigurer) WorkbenchUI.getCurrent().getApplicationContext().getBean("appConfig");
-				
-		tachosRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();
-	}
-	
+		
 	private StreamResource createResource() throws Exception {
         return new StreamResource(new StreamSource() {
             @Override
             public InputStream getStream() {
     			try {    				
-					return tachoDriverService.setZipTachos(WorkbenchUI.getCurrent().getUser(), tachos, DriverActivityDailyCard.this.tachosRepository);
+					return tachoDriverService.setZipTachos(WorkbenchUI.getCurrent().getUser(), tachos, WorkbenchUI.getCurrent().getTachoRepository());
 				} catch (Exception e) {
 					return null;
 				}   

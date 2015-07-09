@@ -57,13 +57,6 @@ import com.vaadin.ui.themes.ValoTheme;
 @Scope("prototype")
 @Push
 public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.BroadcastListener {
-
-    /*
-     * This field stores an access to the dummy backend layer. In real
-     * applications you most likely gain access to your beans trough lookup or
-     * injection; and not in the UI but somewhere closer to where they're
-     * actually accessed.
-     */
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
     private List<TachoDriver> tachoNotifications = new ArrayList<TachoDriver>();
@@ -78,6 +71,8 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
 	
 	private String usernameRememberMe;
 	private String passwordRememberMe;
+	
+	private String tachoRepository;
 	
     @Autowired
     private transient ApplicationContext applicationContext;
@@ -104,20 +99,23 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
     public I18N getI18N() {
     	return getCurrent().i18n;    	
     }
-        
+
+    public String getTachoRepository() {
+    	return  getCurrent().tachoRepository;    	
+    }
+    
 	private I18N configureI18n() {						
-		// configure locale sources
-		i18n = new ResourceBundleI18N("com/thingtrack/workbench/i18n/messages", esLocale, enLocale, frLocale);
-		
+		// configure locale language sources
+		i18n = new ResourceBundleI18N("com/thingtrack/workbench/i18n/messages", esLocale, enLocale, frLocale);		
 		i18n.addListener(this);
 				
 		return i18n;
 	}
 	
-	public String getTachoRepository() {    	
+	private void configureTachoRepository() {    	
 		PropertySourcesPlaceholderConfigurer appConfig = (PropertySourcesPlaceholderConfigurer)getCurrent().getApplicationContext().getBean("appConfig");				
 		
-    	return appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();    	
+		tachoRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();    	
     }
 	
 	private void setDefaultLocale() {
@@ -157,6 +155,9 @@ public final class WorkbenchUI extends UI implements I18NListener, Broadcaster.B
         // configure I18n
         configureI18n();
        
+        // configure tacho repository
+        configureTachoRepository();
+        
         // set default Vaadin browser locale
     	setLocale(Locale.getDefault());
     	

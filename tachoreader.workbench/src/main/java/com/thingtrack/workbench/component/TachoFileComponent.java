@@ -71,10 +71,7 @@ public class TachoFileComponent extends AbstractI18NCustomComponent
 	 */
 	public TachoFileComponent() {
 		buildMainLayout();
-		
-		// get Services
-		getServices();
-		
+				
 		// TODO add user code here
 		upload.setReceiver(this);
         upload.addProgressListener(this);
@@ -116,10 +113,6 @@ public class TachoFileComponent extends AbstractI18NCustomComponent
         
         // get Image Path Repository from Spring 
 		//this.imagePath = appConfig.getAppliedPropertySources().get("localProperties").getProperty("image.directoty").toString();
-	}
-
-	private void getServices() {
-		//this.appConfig = (PropertySourcesPlaceholderConfigurer) WorkbenchUI.getCurrent().getApplicationContext().getBean("appConfig");	
 	}
 	
 	@Override

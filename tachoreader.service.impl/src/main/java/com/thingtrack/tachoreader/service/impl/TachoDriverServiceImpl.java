@@ -24,7 +24,9 @@ import org.tacografo.file.cardblockdriver.subblock.ActivityChangeInfo;
 import org.tacografo.file.cardblockdriver.subblock.CardActivityDailyRecord;
 import org.tacografo.file.cardblockdriver.subblock.CardVehicleRecord;
 import org.tacografo.file.error.ErrorFile;
+import org.tacografo.file.exception.ExceptionCardDriver;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
+import org.tacografo.file.exception.ExceptionDriverNotOrganization;
 import org.tacografo.file.exception.ExceptionFileExist;
 import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
@@ -236,19 +238,19 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 								
 				// the tacho identification card is not the same that the driver one
 				if (!driver.getCardNumber().equals(tachoDriverIdentification)) 
-					throw new Exception("The identification card " + tachoDriverIdentification + " from your tacho is not the same as yours " + driver.getCardNumber() + " identification card registered. The Tacho is from " + tachoHolderName);
+					throw new Exception("Tacho error", new ExceptionCardDriver(tachoDriverIdentification, driver.getCardNumber(), tachoHolderName));
 			}
 			else {
 				try {
-					driver = driverDao.getByCardNumber(tachoDriverIdentification);
-					
-					// check the organization of the tacho
-					if (driver.getOrganization().getId() != user.getOrganizationDefault().getId())
-						throw new Exception("The driver card " + tachoDriverIdentification + " from your tacho is not registered in your organization " + user.getOrganizationDefault().getName());
+					driver = driverDao.getByCardNumber(tachoDriverIdentification);				
 				}
 				catch(Exception ex) {
-					throw new ExceptionDriverNotExist(tachoHolderName, tachoDriverIdentification, tachoCardExpiryDate, tachoDriverBithDate);
+					throw new Exception("Tacho error", new ExceptionDriverNotExist(tachoHolderName, tachoDriverIdentification, tachoCardExpiryDate, tachoDriverBithDate));
 				}
+				
+				// check the organization of the tacho
+				if (driver.getOrganization().getId() != user.getOrganizationDefault().getId())
+					throw new Exception("Tacho error", new ExceptionDriverNotOrganization(user.getOrganizationDefault().getName(), driver.getName()));
 			}
 						
 			// check the driver expiry card is out of date
@@ -263,7 +265,7 @@ public class TachoDriverServiceImpl implements TachoDriverService {
 				
 				throw new ExceptionFileExist(fileName);
 			} catch (ExceptionFileExist ex) {	
-				throw new Exception("The tacho file " + fileName + " already exist");				
+				throw new Exception("The tacho file " + fileName + " already exist", ex);				
 			} catch (Exception ex) {								
 				
 			}

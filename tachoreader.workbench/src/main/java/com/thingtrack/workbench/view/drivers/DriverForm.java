@@ -95,6 +95,7 @@ public class DriverForm extends AbstractI18NValidableCustomComponent {
 						// initialize driver account and set visible the tab configuration												
 						if (driver.getUser() == null){												
 							User user = userService.createNewEntity(WorkbenchUI.getCurrent().getUser().getOrganizationDefault(), driver, WorkbenchUI.getCurrent().getUser().getLanguage());
+							user.setOrganizationDefault(WorkbenchUI.getCurrent().getUser().getOrganizationDefault());
 							
 							userField.setValue(user);
 							driver.setUser(user);

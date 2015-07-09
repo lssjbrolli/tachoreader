@@ -7,9 +7,10 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
+import org.tacografo.file.exception.ExceptionCardDriver;
 import org.tacografo.file.exception.ExceptionDriverNotExist;
+import org.tacografo.file.exception.ExceptionDriverNotOrganization;
 import org.tacografo.file.exception.ExceptionFileExist;
 import org.tacografo.file.exception.ExceptionVehicleNotExist;
 
@@ -92,8 +93,6 @@ public class TachoUploadView extends AbstractI18NView implements View {
 	@Autowired
 	private TachoService tachoService;
 	
-	private String tachoRepository;
-	
 	/**
 	 * The constructor should first build the main layout, set the
 	 * composition root and then do any custom initialization.
@@ -108,8 +107,6 @@ public class TachoUploadView extends AbstractI18NView implements View {
 
 		// TODO add user code here
 		initialize();
-		
-		getServices();
 	}
 	
 	@SuppressWarnings({ "serial" })
@@ -173,7 +170,7 @@ public class TachoUploadView extends AbstractI18NView implements View {
 	    				   										WorkbenchUI.getCurrent().getUser().getPassword(), 
 																(File)file.getUploadedFile(), 
 																file.getName(),
-																tachoRepository);
+																WorkbenchUI.getCurrent().getTachoRepository());
 	    		   
 			    	// Broadcast tacho inserted
 	    		   if (tacho instanceof TachoDriver)
@@ -181,25 +178,41 @@ public class TachoUploadView extends AbstractI18NView implements View {
 	    		   /*if (tacho instanceof TachoVehicle)
 	    			   Broadcaster.broadcast((TachoVehicle)tacho);*/
 					
+	    		   uploadTachoComponent.setMessageType(UploadTachoComponent.MESSAGE_TYPE.INFO);
+	    		   
 				   NotificationHelper.sendInformationNotification("Tacho View", "I've just uploaded tacho file: " + file.getName());
 				} catch (Exception e) {
-					if (e.getCause() instanceof ExceptionVehicleNotExist) {
-						ExceptionVehicleNotExist ex = (ExceptionVehicleNotExist) e.getCause();
-						
-						NotificationHelper.sendErrorNotification("Tacho View", "The vehicle " + ex.getRegistration() + " is not registered");
-					}
-					else if (e.getCause() instanceof ExceptionFileExist) {
+					((Button)tachoItem.getItemProperty("Event").getValue()).setEnabled(false);
+					uploadTachoComponent.setMessage("Tacho not registered");
+					uploadTachoComponent.setMessageType(UploadTachoComponent.MESSAGE_TYPE.ERROR);
+					
+					if (e.getCause() instanceof ExceptionFileExist) {
 						ExceptionFileExist ex = (ExceptionFileExist) e.getCause();
 						
-						NotificationHelper.sendErrorNotification("Tacho View", "The tacho " + ex.getFileName() + " has already been registered");
+						NotificationHelper.sendErrorNotification("Error Tacho View", "The tacho " + ex.getFileName() + " has already been registered");
 					}
+					else if (e.getCause() instanceof ExceptionCardDriver) {
+						ExceptionCardDriver ex = (ExceptionCardDriver) e.getCause();
+						
+						NotificationHelper.sendErrorNotification("Error Tacho View", "The identification card " + ex.getTachoDriverIdentification() + " from your tacho is not the same as yours " + ex.getCardNumber() + " identification card registered. The Tacho is from " + ex.getTachoHolderName());
+					}
+					else if (e.getCause() instanceof ExceptionVehicleNotExist) {
+						ExceptionVehicleNotExist ex = (ExceptionVehicleNotExist) e.getCause();
+						
+						NotificationHelper.sendErrorNotification("Error Tacho View", "The vehicle " + ex.getRegistration() + " is not registered");
+					}
+					else if (e.getCause() instanceof ExceptionDriverNotOrganization) {
+						ExceptionDriverNotOrganization ex = (ExceptionDriverNotOrganization) e.getCause();
+						
+						NotificationHelper.sendErrorNotification("Error Tacho View", "The driver " + ex.getDriverName() + " from your tacho is not registered in your organization " + ex.getCompany());
+					}					
 					else if (e.getCause() instanceof ExceptionDriverNotExist) {
 						ExceptionDriverNotExist ex = (ExceptionDriverNotExist) e.getCause();
 						
-						NotificationHelper.sendErrorNotification("Tacho View", "There is no driver with this identification card " + ex.getCardNumber() + " registered");
-					}
+						NotificationHelper.sendErrorNotification("Error Tacho View", "There is no driver with this identification card " + ex.getCardNumber() + " registered");
+					}									
 					else
-						NotificationHelper.sendErrorNotification("Tacho View", e.getMessage());					
+						NotificationHelper.sendErrorNotification("Error Tacho View", e.getMessage());				
 				}
 	        }
 		});
@@ -300,15 +313,7 @@ public class TachoUploadView extends AbstractI18NView implements View {
 		tachosUploadList.addContainerProperty("Message", CustomComponent.class, null);
 		tachosUploadList.addContainerProperty("Size", CustomComponent.class, null);
 		tachosUploadList.addContainerProperty("Event", Button.class, null);			
-	}
-	
-	private void getServices() {		
-		// get Tacho Repository configuration
-		PropertySourcesPlaceholderConfigurer appConfig = (PropertySourcesPlaceholderConfigurer) WorkbenchUI.getCurrent().getApplicationContext().getBean("appConfig");
-		
-		if (appConfig != null)
-			tachoRepository = appConfig.getAppliedPropertySources().get("localProperties").getProperty("tacho.repository").toString();		
-	}
+	}	
 	
 	@Override
     public void enter(ViewChangeEvent event) {
