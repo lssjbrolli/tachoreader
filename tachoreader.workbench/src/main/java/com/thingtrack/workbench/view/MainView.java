@@ -20,7 +20,8 @@ public class MainView extends HorizontalLayout {
 
         ComponentContainer content = new CssLayout();
         content.addStyleName("view-content");
-        content.setSizeFull();
+        content.addStyleName("v-scrollable");
+        content.setSizeFull();        
         addComponent(content);
         setExpandRatio(content, 1.0f);
 

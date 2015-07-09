@@ -33,8 +33,6 @@ public class DateFilter extends CssLayout {
 	private SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy"); 
 	private Calendar cal = Calendar.getInstance();
 	
-	private String caption;
-	
 	private Date startFilterDate = null;
 	private Date endFilterDate = null;
 	
@@ -62,9 +60,7 @@ public class DateFilter extends CssLayout {
 		this(null);		
 	}
 	
-	public DateFilter(String caption) {
-		this.caption = caption;
-		
+	public DateFilter(String caption) {		
 		buildMainLayout();
 
 		// TODO add user code here

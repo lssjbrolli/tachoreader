@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.thingtrack.tachoreader.domain.TachoDriver;
-import com.thingtrack.workbench.WorkbenchUI;
 
 @SuppressWarnings("serial")
 public class Broadcaster implements Serializable {

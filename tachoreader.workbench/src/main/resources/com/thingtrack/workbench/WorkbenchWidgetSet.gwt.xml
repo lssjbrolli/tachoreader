@@ -36,5 +36,5 @@
 
     <inherits name="com.vaadin.addon.timeline.gwt.TimelineWidgetSet" />
 
-    <inherits name="com.vaadin.addon.calendar.gwt.CalendarWidgetset" />
+    
 </module>

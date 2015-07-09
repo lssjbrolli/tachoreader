@@ -5,6 +5,8 @@ import com.thingtrack.workbench.view.dashboard.DashboardView;
 import com.thingtrack.workbench.view.drivers.DriverView;
 import com.thingtrack.workbench.view.graph.GraphView;
 import com.thingtrack.workbench.view.reports.ReportsView;
+import com.thingtrack.workbench.view.tacho.TachoCalendar;
+import com.thingtrack.workbench.view.tacho.TachoCalendar;
 import com.thingtrack.workbench.view.tacho.TachoWizardDownloadView;
 import com.thingtrack.workbench.view.tacho.TachoUploadView;
 import com.thingtrack.workbench.view.vehicle.VehicleView;
@@ -19,6 +21,7 @@ public enum DashboardViewType {
     VEHICLES("vehicles", VehicleView.class, FontAwesome.TRUCK, false),
     TACHOMETERS_UPLOAD("tachos_upload", TachoUploadView.class, FontAwesome.CLOUD_UPLOAD, false),
     TACHOMETERS_DOWNLOAD("tachos_download", TachoWizardDownloadView.class, FontAwesome.CLOUD_DOWNLOAD, false),
+    CALENDAR("tachos_calendar", TachoCalendar.class, FontAwesome.CALENDAR, false),
     GRAPHS("graphs", GraphView.class, FontAwesome.BAR_CHART_O, false),
     REPORTS("reports", ReportsView.class, FontAwesome.FILE_TEXT_O, true);
 
